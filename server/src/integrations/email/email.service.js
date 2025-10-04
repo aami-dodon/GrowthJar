@@ -159,7 +159,7 @@ export const sendPasswordResetEmail = async ({ email, token }) => {
   await deliverEmail({
     from: env.emailFrom,
     to: email,
-    subject: 'Reset your password for Rishi\'s Jar',
+    subject: "Reset your password for Rishi's Jar",
     text,
     html,
   });
@@ -175,7 +175,7 @@ export const sendFamilyInviteEmail = async ({ email, token, familyName }) => {
   const inviteUrl = buildUrl('/accept-invite', token);
   logger.info({ message: 'Queued family invitation email', to: maskEmail(email) });
   const html = renderTemplate({
-    title: `Join ${familyName} on Rishi\'s Jar`,
+    title: `Join ${familyName} on Rishi's Jar`,
     previewText: `Accept your invitation to ${familyName}.`,
     introLines: [
       `${familyName} would love for you to join their gratitude circle on Rishi's Jar.`,
