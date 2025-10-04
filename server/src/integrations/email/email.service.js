@@ -28,6 +28,7 @@ const renderTemplate = ({
   introLines,
   action,
   footerLines,
+  contentHtml,
 }) => {
   const introHtml = introLines
     .map((line) => `<p style="margin:0 0 16px;font-size:16px;line-height:24px;color:#1f2937;">${line}</p>`)
@@ -80,6 +81,7 @@ const renderTemplate = ({
               <tr>
                 <td>
                   ${introHtml}
+                  ${contentHtml ?? ''}
                   <div style="margin:24px 0;text-align:center;">
                     ${buttonHtml}
                   </div>
@@ -99,6 +101,115 @@ const renderTemplate = ({
 };
 
 const renderText = (lines) => lines.filter(Boolean).join('\n\n');
+
+const escapeHtml = (value) =>
+  `${value ?? ''}`
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const truncate = (value, maxLength = 140) => {
+  const normalized = `${value ?? ''}`;
+  if (normalized.length <= maxLength) return normalized;
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+};
+
+const ENTRY_LABELS = {
+  good_thing: { singular: 'Good thing', plural: 'Good things' },
+  gratitude: { singular: 'Gratitude', plural: 'Gratitudes' },
+  better_choice: { singular: 'Better choice', plural: 'Better choices' },
+};
+
+const formatEntryLabel = (type, count = 1) => {
+  const labels = ENTRY_LABELS[type] ?? { singular: 'Entry', plural: 'Entries' };
+  return count === 1 ? labels.singular : labels.plural;
+};
+
+const formatDate = (date, options) => new Intl.DateTimeFormat('en-US', options).format(date);
+
+const formatDay = (date) => formatDate(date, { weekday: 'short', month: 'short', day: 'numeric' });
+
+const formatTime = (date) => formatDate(date, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+
+const renderEntriesPreview = ({
+  entries,
+  periodLabel,
+  limit = 3,
+}) => {
+  const topEntries = entries.slice(0, limit);
+  if (topEntries.length === 0) {
+    return {
+      html: `<div style="margin:24px 0 0;padding:20px;border-radius:18px;background:#f8fafc;">
+        <p style="margin:0;font-size:15px;line-height:22px;color:#1f2937;">No new slips ${periodLabel}. Take a minute to add one together.</p>
+      </div>`,
+      text: `No new slips ${periodLabel}. Take a minute to add one together.`,
+    };
+  }
+
+  const listItemsHtml = topEntries
+    .map((entry) => {
+      const timestamp = formatTime(entry.createdAt);
+      const content = escapeHtml(truncate(entry.content));
+      return `<li style="margin:0 0 16px;padding:16px 18px;border-radius:16px;background:#ffffff;border:1px solid #e2e8f0;">
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;">${formatEntryLabel(entry.type)}</p>
+        <p style="margin:0 0 8px;font-size:15px;line-height:22px;color:#1f2937;">${content}</p>
+        <p style="margin:0;font-size:13px;color:#64748b;">${escapeHtml(entry.authorLabel)} • ${timestamp}</p>
+      </li>`;
+    })
+    .join('');
+
+  const html = `<div style="margin:24px 0 0;padding:20px;border-radius:18px;background:#f8fafc;">
+      <p style="margin:0 0 12px;font-size:15px;line-height:22px;color:#0f172a;">Here's a peek at slips ${periodLabel}:</p>
+      <ul style="margin:0;padding:0;list-style:none;">${listItemsHtml}</ul>
+    </div>`;
+
+  const textLines = [
+    `Here's a peek at slips ${periodLabel}:`,
+    ...topEntries.map((entry) => {
+      const timestamp = formatTime(entry.createdAt);
+      return `- ${formatEntryLabel(entry.type)} from ${entry.authorLabel} (${timestamp}): ${truncate(entry.content)}`;
+    }),
+  ];
+
+  return { html, text: textLines.join('\n') };
+};
+
+const formatSlipCount = (count) => `${count} ${count === 1 ? 'slip' : 'slips'}`;
+
+const renderSummarySection = ({ summary, totalEntries, range }) => {
+  const rangeLabel = `${formatDay(range.start)} – ${formatDay(range.end)}`;
+  const headline =
+    totalEntries > 0
+      ? `Your family added ${formatSlipCount(totalEntries)} between ${rangeLabel}.`
+      : `No new slips were added between ${rangeLabel}, but there's always time to add one together!`;
+
+  if (summary.length === 0) {
+    return {
+      html: `<div style="margin:24px 0 0;padding:20px;border-radius:18px;background:#eef2ff;">
+        <p style="margin:0;font-size:15px;line-height:22px;color:#1f2937;">${headline}</p>
+      </div>`,
+      text: headline,
+    };
+  }
+
+  const htmlItems = summary
+    .map(
+      (item) =>
+        `<li style="margin:0 0 8px;font-size:14px;line-height:20px;color:#1f2937;">${item.count} ${formatEntryLabel(item.type, item.count)}</li>`,
+    )
+    .join('');
+
+  const html = `<div style="margin:24px 0 0;padding:20px;border-radius:18px;background:#eef2ff;">
+      <p style="margin:0 0 12px;font-size:15px;line-height:22px;color:#1f2937;">${headline}</p>
+      <ul style="margin:0;padding-left:18px;color:#1f2937;font-size:14px;line-height:20px;">${htmlItems}</ul>
+    </div>`;
+
+  const textLines = [headline, ...summary.map((item) => `• ${item.count} ${formatEntryLabel(item.type, item.count)}`)];
+
+  return { html, text: textLines.join('\n') };
+};
 
 /**
  * Sends an email verification link to a user.
@@ -193,6 +304,115 @@ export const sendFamilyInviteEmail = async ({ email, token, familyName }) => {
     from: env.emailFrom,
     to: email,
     subject: `You have been invited to ${familyName} on ${childProfile.jarName}`,
+    text,
+    html,
+  });
+};
+
+/**
+ * Sends the daily reminder email to all family members.
+ *
+ * @param {{ recipients: string[], familyName?: string|null, triggeredBy?: string|null, entries: Array<{ type: string, content: string, createdAt: Date, authorLabel: string }>, date?: Date }} params
+ * @returns {Promise<void>}
+ */
+export const sendDailyReminderEmail = async ({ recipients, familyName, triggeredBy, entries, date = new Date() }) => {
+  const friendlyFamilyName = familyName?.trim() ? familyName.trim() : `${childProfile.jarName} Family`;
+  const dayLabel = formatDay(date);
+  const tagline = '🌟 Time to add to the jar! What went well today?';
+  const slipsCountLine =
+    entries.length > 0
+      ? `You've already added ${formatSlipCount(entries.length)} today. Keep the rhythm going!`
+      : 'No slips yet today—take a pause to celebrate something small.';
+  const entriesPreview = renderEntriesPreview({ entries, periodLabel: 'so far today' });
+  const triggeredByLine = triggeredBy ? `Sent by ${triggeredBy}.` : null;
+
+  const html = renderTemplate({
+    title: `Daily reminder for ${childProfile.jarName}`,
+    previewText: tagline,
+    introLines: [
+      tagline,
+      `${friendlyFamilyName}, it's ${dayLabel}. Your jar is ready for a fresh moment of gratitude.`,
+      slipsCountLine,
+    ],
+    action: { label: 'Open the jar', url: env.clientAppUrl },
+    footerLines: [triggeredByLine, 'Manage reminders from the Notifications panel in the app.'].filter(Boolean),
+    contentHtml: entriesPreview.html,
+  });
+
+  const text = renderText([
+    tagline,
+    `${friendlyFamilyName}, it's ${dayLabel}. Your jar is ready for a fresh moment of gratitude.`,
+    slipsCountLine,
+    entriesPreview.text,
+    triggeredByLine,
+    `Open the jar: ${env.clientAppUrl}`,
+  ]);
+
+  await deliverEmail({
+    from: env.emailFrom,
+    to: recipients,
+    subject: `Daily reminder for ${childProfile.jarName}`,
+    text,
+    html,
+  });
+};
+
+/**
+ * Sends the weekly reflection recap to all family members.
+ *
+ * @param {{
+ *   recipients: string[],
+ *   familyName?: string|null,
+ *   triggeredBy?: string|null,
+ *   entries: Array<{ type: string, content: string, createdAt: Date, authorLabel: string }>,
+ *   summary: Array<{ type: string, count: number }>,
+ *   totalEntries: number,
+ *   range: { start: Date, end: Date },
+ * }} params
+ * @returns {Promise<void>}
+ */
+export const sendWeeklyReflectionEmail = async ({
+  recipients,
+  familyName,
+  triggeredBy,
+  entries,
+  summary,
+  totalEntries,
+  range,
+}) => {
+  const friendlyFamilyName = familyName?.trim() ? familyName.trim() : `${childProfile.jarName} Family`;
+  const tagline = '📖 It’s family jar time — let’s open and celebrate!';
+  const slipsLine =
+    totalEntries > 0
+      ? `${friendlyFamilyName}, you added ${formatSlipCount(totalEntries)} this week.`
+      : `${friendlyFamilyName}, consider gathering to add a fresh slip this week.`;
+  const summarySection = renderSummarySection({ summary, totalEntries, range });
+  const entriesPreview = renderEntriesPreview({ entries, periodLabel: 'from this week' });
+  const triggeredByLine = triggeredBy ? `Sent by ${triggeredBy}.` : null;
+
+  const html = renderTemplate({
+    title: `Weekly reflection for ${childProfile.jarName}`,
+    previewText: tagline,
+    introLines: [tagline, slipsLine, 'Open the jar together and relive the moments you captured.'],
+    action: { label: 'Review the jar', url: env.clientAppUrl },
+    footerLines: [triggeredByLine, 'You can adjust reminders anytime from the Notifications panel.'].filter(Boolean),
+    contentHtml: `${summarySection.html}${entriesPreview.html}`,
+  });
+
+  const text = renderText([
+    tagline,
+    slipsLine,
+    'Open the jar together and relive the moments you captured.',
+    summarySection.text,
+    entriesPreview.text,
+    triggeredByLine,
+    `Review the jar: ${env.clientAppUrl}`,
+  ]);
+
+  await deliverEmail({
+    from: env.emailFrom,
+    to: recipients,
+    subject: `Weekly reflection for ${childProfile.jarName}`,
     text,
     html,
   });

@@ -6,6 +6,8 @@ const emailMocks = {
   sendEmailVerification: jest.fn().mockResolvedValue(undefined),
   sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
   sendFamilyInviteEmail: jest.fn().mockResolvedValue(undefined),
+  sendDailyReminderEmail: jest.fn().mockResolvedValue(undefined),
+  sendWeeklyReflectionEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 jest.unstable_mockModule('../src/integrations/email/email.service.js', () => emailMocks);
