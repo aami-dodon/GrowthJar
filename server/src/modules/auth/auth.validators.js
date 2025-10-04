@@ -6,8 +6,13 @@ const passwordRule = body('password')
   .isLength({ min: 8 })
   .withMessage('Password must be at least 8 characters');
 
+const normalizeEmailInput = (value) => value?.trim().toLowerCase();
+
 export const signupRules = [
-  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('email')
+    .isEmail()
+    .withMessage('Valid email required')
+    .customSanitizer(normalizeEmailInput),
   passwordRule,
   body('role').isIn(Object.values(USER_ROLES)).withMessage('Invalid role'),
   body('familyRole')
@@ -27,7 +32,10 @@ export const signupRules = [
 ];
 
 export const loginRules = [
-  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('email')
+    .isEmail()
+    .withMessage('Valid email required')
+    .customSanitizer(normalizeEmailInput),
   passwordRule,
 ];
 
@@ -36,7 +44,10 @@ export const verifyEmailRules = [
 ];
 
 export const requestResetRules = [
-  body('email').isEmail().withMessage('Valid email required').normalizeEmail(),
+  body('email')
+    .isEmail()
+    .withMessage('Valid email required')
+    .customSanitizer(normalizeEmailInput),
 ];
 
 export const resetPasswordRules = [
