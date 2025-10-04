@@ -62,11 +62,15 @@ export const exportEntriesToPdf = (entries) => {
     cursorY += 18
 
     doc.setFont('helvetica', 'normal')
-    const authorLine = entry.target ? `${entry.author} → ${entry.target}` : entry.author
+    const authorName = entry.author ? String(entry.author).trim() : 'Unknown contributor'
+    const targetName = entry.target ? String(entry.target).trim() : ''
+    const authorLine = targetName
+      ? `From ${authorName} to ${targetName}`
+      : `From ${authorName}`
     doc.text(authorLine, marginX, cursorY)
     cursorY += 16
 
-    doc.setFont('helvetica', 'italic')
+    doc.setFont('helvetica', 'normal')
     const noteLines = doc.splitTextToSize(`“${entry.text}”`, 480)
     doc.text(noteLines, marginX, cursorY)
     cursorY += noteLines.length * 16 + 4
