@@ -42,6 +42,16 @@ const createResetToken = async (userId) => {
 
 const normalizeEmail = (value) => value?.trim().toLowerCase();
 
+const resolveFamily = async () => {
+  const existingFamily = await prisma.family.findFirst({ select: { id: true } });
+  if (existingFamily?.id) {
+    return { id: existingFamily.id, created: false };
+  }
+
+  const createdFamily = await prisma.family.create({ data: {}, select: { id: true } });
+  return { id: createdFamily.id, created: true };
+};
+
 const assertAllowedSignup = (email, familyRole, role) => {
   const normalizedRole = typeof familyRole === 'string' ? familyRole.trim().toLowerCase() : null;
   if (!normalizedRole || !Object.values(FAMILY_ROLES).includes(normalizedRole)) {
@@ -63,11 +73,13 @@ const assertAllowedSignup = (email, familyRole, role) => {
   }
 };
 
-export const signup = async ({ email, password, role, familyRole, firstName, lastName, familyId }) => {
+export const signup = async ({ email, password, role, familyRole, firstName, lastName }) => {
   const normalizedRole = typeof familyRole === 'string' ? familyRole.trim().toLowerCase() : familyRole;
   assertAllowedSignup(email, normalizedRole, role);
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const normalizedEmail = normalizeEmail(email);
+
+  const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
     throw createHttpError(409, 'Account already exists');
   }
@@ -79,15 +91,17 @@ export const signup = async ({ email, password, role, familyRole, firstName, las
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
+  const { id: resolvedFamilyId, created: familyCreated } = await resolveFamily();
+
   const user = await prisma.user.create({
     data: {
-      email,
+      email: normalizedEmail,
       role,
       familyRole: normalizedRole,
       firstName,
       lastName,
       passwordHash: hashedPassword,
-      familyId: familyId ?? null,
+      familyId: resolvedFamilyId,
     },
   });
 
@@ -99,11 +113,20 @@ export const signup = async ({ email, password, role, familyRole, firstName, las
     details: { role, familyRole },
   });
 
+  if (familyCreated) {
+    await recordAuditLog({
+      userId: user.id,
+      action: 'FAMILY_CREATED',
+      details: { familyId: resolvedFamilyId, origin: 'signup' },
+    });
+  }
+
   return user;
 };
 
 export const login = async ({ email, password }) => {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const normalizedEmail = normalizeEmail(email);
+  const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (!user) {
     throw createHttpError(401, 'Invalid credentials');
   }
