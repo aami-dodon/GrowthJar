@@ -16,6 +16,10 @@ const prismaMock = {
     create: jest.fn(),
     update: jest.fn(),
   },
+  family: {
+    findFirst: jest.fn(),
+    create: jest.fn(),
+  },
   emailVerificationToken: {
     create: jest.fn(),
     findFirst: jest.fn(),
@@ -57,6 +61,8 @@ describe('Auth routes', () => {
       id: where.id,
       ...data,
     }));
+    prismaMock.family.findFirst.mockResolvedValue(null);
+    prismaMock.family.create.mockResolvedValue({ id: 'family-1' });
     prismaMock.emailVerificationToken.create.mockResolvedValue({ id: 'token-1' });
     prismaMock.emailVerificationToken.findFirst.mockResolvedValue(null);
     prismaMock.emailVerificationToken.deleteMany.mockResolvedValue({ count: 0 });
@@ -82,6 +88,32 @@ describe('Auth routes', () => {
     expect(response.body.status).toBe('success');
     expect(response.body.data.email).toBe(process.env.AUTH_MOM_EMAIL);
     expect(response.body.data.familyRole).toBe('mom');
+    expect(prismaMock.family.create).toHaveBeenCalled();
+    expect(prismaMock.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ familyId: 'family-1' }),
+      }),
+    );
+  });
+
+  it('reuses an existing family when available', async () => {
+    prismaMock.family.findFirst.mockResolvedValueOnce({ id: 'family-existing' });
+
+    const response = await request(app).post('/api/auth/signup').send({
+      email: process.env.AUTH_DAD_EMAIL,
+      password: 'Password123',
+      role: 'parent',
+      familyRole: 'dad',
+      firstName: 'Another',
+    });
+
+    expect(response.status).toBe(201);
+    expect(prismaMock.family.create).not.toHaveBeenCalled();
+    expect(prismaMock.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ familyId: 'family-existing' }),
+      }),
+    );
   });
 
   it('verifies an email via the public link', async () => {
