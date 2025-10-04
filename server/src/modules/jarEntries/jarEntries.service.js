@@ -148,7 +148,11 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
       userId,
       entryType: 'better_choice',
       content,
-      metadata: { responseTo: entryId, role: 'child' },
+      metadata: {
+        responseTo: entryId,
+        role: 'child',
+        author: user.familyRole ?? 'rishi',
+      },
     },
   });
 
