@@ -24,7 +24,12 @@ export const handleSignup = async (req, res, next) => {
   try {
     handleValidation(req);
     const user = await signup(req.body);
-    res.status(201).json({ status: 'success', data: { id: user.id, email: user.email } });
+    res
+      .status(201)
+      .json({
+        status: 'success',
+        data: { id: user.id, email: user.email, familyRole: user.familyRole },
+      });
   } catch (error) {
     next(error);
   }
@@ -47,6 +52,7 @@ export const handleLogin = async (req, res, next) => {
           id: user.id,
           email: user.email,
           role: user.role,
+          familyRole: user.familyRole,
           emailVerified: user.emailVerified,
           firstName: user.firstName,
           lastName: user.lastName,
