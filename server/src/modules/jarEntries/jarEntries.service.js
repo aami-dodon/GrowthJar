@@ -3,6 +3,9 @@ import { createHttpError } from '../../utils/errors.js';
 import { recordAuditLog } from '../audit/audit.service.js';
 import { FAMILY_ROLES } from '../../shared/constants/familyRoles.js';
 import { childProfile } from '../../shared/constants/childProfile.js';
+import { sendEntryNotificationEmail } from '../../integrations/email/email.service.js';
+import { logger } from '../../config/logger.js';
+import { getNotificationPreferencesByFamilyId } from '../notificationPreferences/notificationPreferences.service.js';
 
 const ENTRY_TYPES = ['good_thing', 'gratitude', 'better_choice'];
 
@@ -30,6 +33,71 @@ const canonicalizeTarget = (value) => {
   if (['mom', 'mother'].includes(normalized)) return 'mother';
   if (['dad', 'father'].includes(normalized)) return 'father';
   return normalized;
+};
+
+const notifyFamilyOfNewEntry = async ({ entry, author }) => {
+  if (!author.familyId) {
+    return;
+  }
+
+  try {
+    const preferences = await getNotificationPreferencesByFamilyId(author.familyId);
+
+    if (!preferences.entryAlerts) {
+      logger.info({
+        message: 'Entry alerts disabled, skipping notification emails',
+        entryId: entry.id,
+        familyId: author.familyId,
+      });
+      return;
+    }
+
+    const recipients = await prisma.user.findMany({
+      where: {
+        familyId: author.familyId,
+        emailVerified: true,
+        NOT: { id: author.id },
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+      },
+    });
+
+    if (recipients.length === 0) {
+      return;
+    }
+
+    const authorName = author.firstName ?? author.email;
+    await Promise.all(
+      recipients
+        .filter((member) => member.email)
+        .map((member) =>
+          sendEntryNotificationEmail({
+            to: member.email,
+            entryType: entry.entryType,
+            content: entry.content,
+            authorName,
+            recipientName: member.firstName ?? undefined,
+          }).catch((error) => {
+            logger.error({
+              message: 'Failed to send entry notification email',
+              error,
+              entryId: entry.id,
+              recipient: member.email,
+            });
+          })
+        )
+    );
+  } catch (error) {
+    logger.error({
+      message: 'Failed to queue entry notification emails',
+      error,
+      entryId: entry.id,
+      familyId: author.familyId,
+    });
+  }
 };
 
 export const createJarEntry = async ({ userId, entryType, content, metadata = {} }) => {
@@ -112,6 +180,7 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
   });
 
   await recordAuditLog({ userId, action: 'JAR_ENTRY_CREATED', details: { entryId: entry.id, entryType } });
+  await notifyFamilyOfNewEntry({ entry, author: user });
   return entry;
 };
 

@@ -17,6 +17,7 @@
 - `id` (UUID, PK)
 - `familyName` (string, optional)
 - `createdAt` (timestamp)
+- `notificationPreference` (one-to-one -> NotificationPreferences)
 
 ## JarEntries
 - `id` (UUID, PK)
@@ -33,6 +34,17 @@
 - `type` (`daily` | `weekly`)
 - `sentAt` (timestamp)
 - `createdAt` (timestamp)
+
+## NotificationPreferences
+- `id` (UUID, PK)
+- `familyId` (UUID, unique FK -> Families.id)
+- `dailyReminder` (boolean, default `true`)
+- `weeklyReminder` (boolean, default `true`)
+- `entryAlerts` (boolean, default `true`)
+- `summaryEmail` (boolean, default `true`)
+- `preferredReflectionTime` (string, optional)
+- `createdAt` (timestamp)
+- `updatedAt` (timestamp)
 
 ## AuditLogs
 - `id` (UUID, PK)
