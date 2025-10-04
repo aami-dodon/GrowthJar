@@ -84,6 +84,7 @@ cd RishisJar
    ```
 2. Set authentication values such as `AUTH_MOM_EMAIL`, `AUTH_DAD_EMAIL`, `AUTH_CHILD_EMAIL`, and `CHILD_NAME` to match the intended family members.
 3. Provide a Postgres connection string and any other service credentials referenced in the `.env` files. Docker Compose and the local workspaces both read from the root `.env` file.
+4. The Express backend automatically loads these variables via [`dotenv`](https://www.npmjs.com/package/dotenv) in `server/src/config/env.js`, so restarting the server after editing `.env` is enough to apply new values.
 
 ### Backend
 ```bash

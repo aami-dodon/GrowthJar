@@ -28,7 +28,7 @@ services:
       NOTIFICATION_DAILY_CRON: ${NOTIFICATION_DAILY_CRON:-0 18 * * *}
       NOTIFICATION_WEEKLY_CRON: ${NOTIFICATION_WEEKLY_CRON:-0 17 * * SUN}
     ports:
-      - "${PORT:-7500}:7500"
+      - "${PORT:-7500}:${PORT:-7500}"
     restart: unless-stopped
 
   client:
