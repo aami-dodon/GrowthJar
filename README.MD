@@ -9,10 +9,12 @@ Family gratitude and growth tracker with a PERN stack. The frontend (Vite + Reac
    npm install
    ```
 2. Copy `.env.example` to `.env` and populate database + secrets.
+
+3. Apply migrations (after configuring Prisma) from the `/server` directory:
    - Set `AUTH_MOM_EMAIL`, `AUTH_DAD_EMAIL`, and `AUTH_RISHI_EMAIL` to the exact addresses that should be able to register.
 3. Apply migrations (after configuring Prisma) to sync the `User` table with the new `FamilyRole` column:
    ```bash
-   npx prisma migrate deploy
+   npm run prisma:migrate
    ```
 4. Start the API:
    ```bash
@@ -35,6 +37,7 @@ The frontend launches with the authentication landing page. New sign-ups must ve
    ```bash
    docker compose up --build
    ```
+   The server container automatically runs `prisma migrate deploy` during startup, so your configured Postgres database receives the latest schema before the API begins accepting traffic.
 3. The API will be available on `http://localhost:4000` and the frontend will be served on `http://localhost:5173` (port mappings can be adjusted via the environment variables in `.env.example`).
 
 ## Testing

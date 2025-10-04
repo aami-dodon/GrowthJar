@@ -8,7 +8,8 @@
     "dev": "nodemon --watch src --exec node src/server.js",
     "start": "node src/server.js",
     "lint": "eslint \"src/**/*.{js,mjs}\"",
-    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "prisma:migrate": "prisma migrate deploy"
   },
   "engines": {
     "node": ">=18"
