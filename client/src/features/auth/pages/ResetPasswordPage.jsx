@@ -54,7 +54,7 @@ const ResetPasswordPage = () => {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-50 via-white to-leaf-50 px-4 py-12">
       <div className="w-full max-w-md rounded-3xl border border-white/70 bg-white/90 p-10 shadow-2xl shadow-slate-900/10 backdrop-blur">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-leaf-500 text-xl font-semibold text-white shadow-lg">
-          RJ
+          GJ
         </div>
         <h1 className="mt-6 text-2xl font-semibold text-slate-900">Reset password</h1>
         <p className="mt-2 text-sm text-slate-600">{status.message}</p>

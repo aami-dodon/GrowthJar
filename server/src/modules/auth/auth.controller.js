@@ -161,7 +161,7 @@ const renderVerificationPage = ({
     </head>
     <body>
       <main class="card">
-        <div class="badge">RJ</div>
+        <div class="badge">GJ</div>
         <h1>${heading}</h1>
         <p>${message}</p>
         <a class="action" href="${actionUrl}">${actionLabel}</a>
