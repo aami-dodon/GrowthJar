@@ -12,6 +12,7 @@ Growth Jar is a family-focused gratitude and personal development tracker built 
 - [Screenshots](#screenshots)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
+  - [Demo Site](#demo-site)
   - [Features](#features)
   - [Tech Stack](#tech-stack)
   - [Project Structure](#project-structure)
@@ -30,6 +31,13 @@ Growth Jar is a family-focused gratitude and personal development tracker built 
 
 ## Overview
 Growth Jar separates the frontend and backend into dedicated workspaces. The React client delivers the Growth Jar experience while the Express API powers authentication, journaling workflows, and persistence. Authentication is role-based and supports predefined family members (mom, dad, and child) who must verify their email before gaining access.
+
+## Demo Site
+- Access the hosted demo at [https://growthjar.dodon.in/](https://growthjar.dodon.in/).
+- Demo accounts: `mom@example.com`, `dad@example.com`, and `child@example.com`.
+- The password for all demo users is `growthjar`.
+- Uptime is not guaranteed, and the demo environment may be offline without notice.
+- Demo data is cleared on a regular basis, so any entries you create may be removed.
 
 ## Features
 - Role-based authentication with email verification for each family member.
