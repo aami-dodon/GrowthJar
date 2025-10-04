@@ -2,11 +2,8 @@ import { useState } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_CATEGORIES } from '../utils/entryUtils'
 
-const ParentOptions = ['Mom', 'Dad']
-
 const DailyEntryForms = () => {
-  const { addEntries } = useEntriesContext()
-  const [parentAuthor, setParentAuthor] = useState(ParentOptions[0])
+  const { addEntries, submissionPermissions } = useEntriesContext()
   const [parentGoodThing, setParentGoodThing] = useState('')
   const [parentGratitude, setParentGratitude] = useState('')
   const [childGratitudeDad, setChildGratitudeDad] = useState('')
@@ -15,6 +12,8 @@ const DailyEntryForms = () => {
   const [childAlert, setChildAlert] = useState(null)
   const [isParentSubmitting, setIsParentSubmitting] = useState(false)
   const [isChildSubmitting, setIsChildSubmitting] = useState(false)
+
+  const { canSubmitParentEntries, canSubmitChildEntries, parentAuthorLabel, childAuthorLabel } = submissionPermissions
 
   const resetParentForm = () => {
     setParentGoodThing('')
@@ -28,12 +27,16 @@ const DailyEntryForms = () => {
 
   const handleParentSubmit = async (event) => {
     event.preventDefault()
+    if (!canSubmitParentEntries) {
+      setParentAlert({ type: 'error', message: 'Your account can only submit your own parent notes.' })
+      return
+    }
     if (isParentSubmitting) return
     const entries = []
     if (parentGoodThing.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GOOD_THING,
-        author: parentAuthor,
+        author: parentAuthorLabel,
         target: 'Rishi',
         text: parentGoodThing.trim(),
       })
@@ -41,7 +44,7 @@ const DailyEntryForms = () => {
     if (parentGratitude.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GRATITUDE,
-        author: parentAuthor,
+        author: parentAuthorLabel,
         target: 'Rishi',
         text: parentGratitude.trim(),
       })
@@ -73,12 +76,16 @@ const DailyEntryForms = () => {
 
   const handleChildSubmit = async (event) => {
     event.preventDefault()
+    if (!canSubmitChildEntries) {
+      setChildAlert({ type: 'error', message: 'Only Rishi can add these gratitude notes.' })
+      return
+    }
     if (isChildSubmitting) return
     const entries = []
     if (childGratitudeDad.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER,
-        author: 'Rishi',
+        author: childAuthorLabel ?? 'Rishi',
         target: 'Dad',
         text: childGratitudeDad.trim(),
       })
@@ -86,7 +93,7 @@ const DailyEntryForms = () => {
     if (childGratitudeMom.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER,
-        author: 'Rishi',
+        author: childAuthorLabel ?? 'Rishi',
         target: 'Mom',
         text: childGratitudeMom.trim(),
       })
@@ -123,136 +130,133 @@ const DailyEntryForms = () => {
         </p>
       </div>
       <div className="grid gap-8 lg:grid-cols-2">
-        <form
-          onSubmit={handleParentSubmit}
-          className="flex flex-col gap-6 rounded-3xl border border-sky-100 bg-white/80 p-6 shadow-lg shadow-sky-100/50 backdrop-blur"
-        >
-          <header className="flex flex-col gap-2">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sky-600">
-              <span aria-hidden="true">🧑‍🤝‍🧑</span> Parent reflection
-            </span>
-            <h3 className="font-display text-2xl text-slate-900">Celebrate Rishi&rsquo;s glow-up moments</h3>
-          </header>
-          <div className="grid gap-4">
-            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              Who is writing today?
-              <div className="flex gap-3">
-                {ParentOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => setParentAuthor(option)}
-                    className={
-                      parentAuthor === option
-                        ? 'flex-1 rounded-2xl border border-leaf-500 bg-leaf-100/70 px-4 py-2 font-semibold text-leaf-700 shadow-md'
-                        : 'flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-2 font-medium text-slate-500 transition hover:border-leaf-300 hover:text-leaf-600'
-                    }
-                  >
-                    {option}
-                  </button>
-                ))}
+        {canSubmitParentEntries && (
+          <form
+            onSubmit={handleParentSubmit}
+            className="flex flex-col gap-6 rounded-3xl border border-sky-100 bg-white/80 p-6 shadow-lg shadow-sky-100/50 backdrop-blur"
+          >
+            <header className="flex flex-col gap-2">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sky-600">
+                <span aria-hidden="true">🧑‍🤝‍🧑</span> Parent reflection
+              </span>
+              <h3 className="font-display text-2xl text-slate-900">Celebrate Rishi&rsquo;s glow-up moments</h3>
+            </header>
+            <div className="grid gap-4">
+              <div className="flex flex-col gap-1 text-sm font-semibold text-slate-600">
+                <span>Writing as</span>
+                <span className="inline-flex w-fit items-center gap-2 rounded-2xl border border-leaf-400 bg-leaf-100/80 px-4 py-2 text-base font-semibold text-leaf-700 shadow-sm">
+                  {parentAuthorLabel}
+                </span>
               </div>
-            </label>
-            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              Good thing Rishi did today
-              <textarea
-                value={parentGoodThing}
-                onChange={(event) => setParentGoodThing(event.target.value)}
-                rows={3}
-                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
-                placeholder="Rishi welcomed a new classmate at school..."
-              />
-            </label>
-            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              Today we&rsquo;re grateful to Rishi for...
-              <textarea
-                value={parentGratitude}
-                onChange={(event) => setParentGratitude(event.target.value)}
-                rows={3}
-                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-200"
-                placeholder="Thank you for helping tidy up the living room..."
-              />
-            </label>
-          </div>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-slate-500">Add at least one note a day to keep the jar buzzing with love.</p>
-            <button
-              type="submit"
-              disabled={isParentSubmitting}
-              className="rounded-full bg-gradient-to-r from-leaf-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-leaf-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isParentSubmitting ? 'Saving…' : 'Drop slips into the jar'}
-            </button>
-          </div>
-          {parentAlert && (
-            <p
-              className={
-                parentAlert.type === 'error'
-                  ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
-                  : 'rounded-2xl bg-leaf-50 px-4 py-3 text-sm font-semibold text-leaf-700'
-              }
-              role="status"
-            >
-              {parentAlert.message}
-            </p>
-          )}
-        </form>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+                Good thing Rishi did today
+                <textarea
+                  value={parentGoodThing}
+                  onChange={(event) => setParentGoodThing(event.target.value)}
+                  rows={3}
+                  className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
+                  placeholder="Rishi welcomed a new classmate at school..."
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+                Today we&rsquo;re grateful to Rishi for...
+                <textarea
+                  value={parentGratitude}
+                  onChange={(event) => setParentGratitude(event.target.value)}
+                  rows={3}
+                  className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="Thank you for helping tidy up the living room..."
+                />
+              </label>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-slate-500">Add at least one note a day to keep the jar buzzing with love.</p>
+              <button
+                type="submit"
+                disabled={isParentSubmitting}
+                className="rounded-full bg-gradient-to-r from-leaf-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-leaf-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isParentSubmitting ? 'Saving…' : 'Drop slips into the jar'}
+              </button>
+            </div>
+            {parentAlert && (
+              <p
+                className={
+                  parentAlert.type === 'error'
+                    ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
+                    : 'rounded-2xl bg-leaf-50 px-4 py-3 text-sm font-semibold text-leaf-700'
+                }
+                role="status"
+              >
+                {parentAlert.message}
+              </p>
+            )}
+          </form>
+        )}
 
-        <form
-          onSubmit={handleChildSubmit}
-          className="flex flex-col gap-6 rounded-3xl border border-sunshine-100 bg-white/80 p-6 shadow-lg shadow-sunshine-100/50 backdrop-blur"
-        >
-          <header className="flex flex-col gap-2">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sunshine-600">
-              <span aria-hidden="true">🧒</span> Rishi&rsquo;s gratitude
-            </span>
-            <h3 className="font-display text-2xl text-slate-900">Thank you, Mom and Dad!</h3>
-          </header>
-          <div className="grid gap-4">
-            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              I am grateful to Dad for...
-              <textarea
-                value={childGratitudeDad}
-                onChange={(event) => setChildGratitudeDad(event.target.value)}
-                rows={3}
-                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sunshine-400 focus:outline-none focus:ring-2 focus:ring-sunshine-200"
-                placeholder="Reading me my favorite adventure story..."
-              />
-            </label>
-            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              I am grateful to Mom for...
-              <textarea
-                value={childGratitudeMom}
-                onChange={(event) => setChildGratitudeMom(event.target.value)}
-                rows={3}
-                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-lavender-400 focus:outline-none focus:ring-2 focus:ring-lavender-200"
-                placeholder="Packing a surprise note in my lunch..."
-              />
-            </label>
+        {canSubmitChildEntries && (
+          <form
+            onSubmit={handleChildSubmit}
+            className="flex flex-col gap-6 rounded-3xl border border-sunshine-100 bg-white/80 p-6 shadow-lg shadow-sunshine-100/50 backdrop-blur"
+          >
+            <header className="flex flex-col gap-2">
+              <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sunshine-600">
+                <span aria-hidden="true">🧒</span> Rishi&rsquo;s gratitude
+              </span>
+              <h3 className="font-display text-2xl text-slate-900">Thank you, Mom and Dad!</h3>
+            </header>
+            <div className="grid gap-4">
+              <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+                I am grateful to Dad for...
+                <textarea
+                  value={childGratitudeDad}
+                  onChange={(event) => setChildGratitudeDad(event.target.value)}
+                  rows={3}
+                  className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sunshine-400 focus:outline-none focus:ring-2 focus:ring-sunshine-200"
+                  placeholder="Reading me my favorite adventure story..."
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+                I am grateful to Mom for...
+                <textarea
+                  value={childGratitudeMom}
+                  onChange={(event) => setChildGratitudeMom(event.target.value)}
+                  rows={3}
+                  className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-lavender-400 focus:outline-none focus:ring-2 focus:ring-lavender-200"
+                  placeholder="Packing a surprise note in my lunch..."
+                />
+              </label>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-slate-500">Kind words water our family garden. Share one every night!</p>
+              <button
+                type="submit"
+                disabled={isChildSubmitting}
+                className="rounded-full bg-gradient-to-r from-sunshine-500 to-lavender-500 px-5 py-2 font-semibold text-white shadow-lg shadow-sunshine-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isChildSubmitting ? 'Saving…' : 'Send love to the jar'}
+              </button>
+            </div>
+            {childAlert && (
+              <p
+                className={
+                  childAlert.type === 'error'
+                    ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
+                    : 'rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700'
+                }
+                role="status"
+              >
+                {childAlert.message}
+              </p>
+            )}
+          </form>
+        )}
+
+        {!canSubmitParentEntries && !canSubmitChildEntries && (
+          <div className="rounded-3xl border border-slate-100 bg-white/80 px-6 py-8 text-sm font-semibold text-slate-600 shadow-inner">
+            Sign in as Mom, Dad, or Rishi to add new gratitude slips.
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-slate-500">Kind words water our family garden. Share one every night!</p>
-            <button
-              type="submit"
-              disabled={isChildSubmitting}
-              className="rounded-full bg-gradient-to-r from-sunshine-500 to-lavender-500 px-5 py-2 font-semibold text-white shadow-lg shadow-sunshine-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isChildSubmitting ? 'Saving…' : 'Send love to the jar'}
-            </button>
-          </div>
-          {childAlert && (
-            <p
-              className={
-                childAlert.type === 'error'
-                  ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
-                  : 'rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700'
-              }
-              role="status"
-            >
-              {childAlert.message}
-            </p>
-          )}
-        </form>
+        )}
       </div>
     </section>
   )

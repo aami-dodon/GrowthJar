@@ -1,6 +1,7 @@
 import { prisma } from '../../config/prisma.js';
 import { createHttpError } from '../../utils/errors.js';
 import { recordAuditLog } from '../audit/audit.service.js';
+import { FAMILY_ROLES } from '../../shared/constants/familyRoles.js';
 
 const ENTRY_TYPES = ['good_thing', 'gratitude', 'better_choice'];
 
@@ -10,6 +11,24 @@ const ensureFamilyAccess = async ({ userId, familyId }) => {
     throw createHttpError(403, 'Family access denied');
   }
   return user;
+};
+
+const canonicalizeFamilyRole = (value) => {
+  if (!value || typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (['mom', 'mother'].includes(normalized)) return FAMILY_ROLES.MOM;
+  if (['dad', 'father'].includes(normalized)) return FAMILY_ROLES.DAD;
+  if (['rishi'].includes(normalized)) return FAMILY_ROLES.RISHI;
+  return normalized;
+};
+
+const canonicalizeTarget = (value) => {
+  if (!value || typeof value !== 'string') return null;
+  const normalized = value.trim().toLowerCase();
+  if (['rishi'].includes(normalized)) return 'rishi';
+  if (['mom', 'mother'].includes(normalized)) return 'mother';
+  if (['dad', 'father'].includes(normalized)) return 'father';
+  return normalized;
 };
 
 export const createJarEntry = async ({ userId, entryType, content, metadata = {} }) => {
@@ -22,21 +41,62 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
     throw createHttpError(400, 'User must belong to a family');
   }
 
+  const familyRole = canonicalizeFamilyRole(user.familyRole);
+  const incomingMetadata = metadata ?? {};
+  const sanitizedMetadata = { ...incomingMetadata };
+  sanitizedMetadata.author = canonicalizeFamilyRole(sanitizedMetadata.author);
+  sanitizedMetadata.target = canonicalizeTarget(sanitizedMetadata.target);
+
   if (user.role === 'child' && entryType === 'good_thing') {
     throw createHttpError(403, 'Children cannot add good things');
   }
 
-  if (user.role === 'child' && entryType === 'better_choice' && !metadata.responseTo) {
-    throw createHttpError(400, 'Child responses must reference a better choice entry');
+  if (user.role === 'parent') {
+    if (![FAMILY_ROLES.MOM, FAMILY_ROLES.DAD].includes(familyRole)) {
+      throw createHttpError(403, 'Parent account must be assigned to Mom or Dad');
+    }
+
+    if (sanitizedMetadata.author && sanitizedMetadata.author !== familyRole) {
+      throw createHttpError(403, 'Parents can only submit entries as themselves');
+    }
+
+    sanitizedMetadata.author = familyRole;
+
+    if (['good_thing', 'gratitude', 'better_choice'].includes(entryType)) {
+      if (sanitizedMetadata.target && sanitizedMetadata.target !== 'rishi') {
+        throw createHttpError(403, 'Parents can only target Rishi with these entries');
+      }
+      sanitizedMetadata.target = 'rishi';
+    }
+
+    if (entryType === 'better_choice' && sanitizedMetadata.responseTo) {
+      throw createHttpError(400, 'Parents cannot respond to better choice entries');
+    }
+    delete sanitizedMetadata.responseTo;
   }
 
-  if (user.role === 'parent' && entryType === 'gratitude') {
-    metadata.target = metadata.target ?? 'rishi';
-  }
+  if (user.role === 'child') {
+    if (familyRole !== FAMILY_ROLES.RISHI) {
+      throw createHttpError(403, 'Only Rishi can submit child entries');
+    }
 
-  if (user.role === 'child' && entryType === 'gratitude') {
-    if (!['mother', 'father'].includes(metadata.target)) {
-      throw createHttpError(400, 'Child gratitude must target mother or father');
+    if (sanitizedMetadata.author && sanitizedMetadata.author !== FAMILY_ROLES.RISHI) {
+      throw createHttpError(403, 'Children can only submit entries as themselves');
+    }
+
+    sanitizedMetadata.author = FAMILY_ROLES.RISHI;
+
+    if (entryType === 'gratitude') {
+      if (!['mother', 'father'].includes(sanitizedMetadata.target)) {
+        throw createHttpError(400, 'Child gratitude must target mother or father');
+      }
+    }
+
+    if (entryType === 'better_choice') {
+      if (!sanitizedMetadata.responseTo) {
+        throw createHttpError(400, 'Child responses must reference a better choice entry');
+      }
+      sanitizedMetadata.target = sanitizedMetadata.target ?? 'rishi';
     }
   }
 
@@ -46,7 +106,7 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
       userId,
       entryType,
       content,
-      metadata,
+      metadata: sanitizedMetadata,
     },
   });
 
@@ -141,6 +201,9 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
   if (user.role !== 'child') {
     throw createHttpError(403, 'Only children can respond to better choices');
   }
+  if (canonicalizeFamilyRole(user.familyRole) !== FAMILY_ROLES.RISHI) {
+    throw createHttpError(403, 'Only Rishi can respond to better choices');
+  }
 
   const response = await prisma.jarEntry.create({
     data: {
@@ -151,7 +214,7 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
       metadata: {
         responseTo: entryId,
         role: 'child',
-        author: user.familyRole ?? 'rishi',
+        author: FAMILY_ROLES.RISHI,
       },
     },
   });

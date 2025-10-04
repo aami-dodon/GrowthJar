@@ -191,75 +191,146 @@ const normalizeJarEntries = (items) => {
   })
 }
 
-const mapEntryToApiPayload = (entry) => {
+const mapEntryToApiPayload = (entry, user) => {
   if (!entry?.category || !entry?.text) {
     throw new Error('Entry must include category and text')
   }
 
+  if (!user) {
+    throw new Error('We could not verify who is adding this entry. Please sign in again.')
+  }
+
+  const normalizedUserRole = typeof user.role === 'string' ? user.role.toLowerCase() : null
+  const normalizedFamilyRole = typeof user.familyRole === 'string' ? user.familyRole.toLowerCase() : null
+  const normalizedEntryAuthor = toCanonicalRole(entry.author ?? null)
+
+  const ensureParentAuthor = () => {
+    if (normalizedUserRole !== 'parent') {
+      throw new Error('Only parent accounts can add this entry.')
+    }
+    if (!['mom', 'dad'].includes(normalizedFamilyRole)) {
+      throw new Error('Your account must be set up as Mom or Dad to add this entry.')
+    }
+    if (normalizedEntryAuthor && normalizedEntryAuthor !== normalizedFamilyRole) {
+      throw new Error('You can only submit parent entries as yourself.')
+    }
+    return normalizedFamilyRole
+  }
+
+  const ensureChildAuthor = () => {
+    if (normalizedUserRole !== 'child') {
+      throw new Error('Only Rishi can add this entry.')
+    }
+    if (normalizedFamilyRole !== 'rishi') {
+      throw new Error('Only Rishi can add this entry.')
+    }
+    if (normalizedEntryAuthor && normalizedEntryAuthor !== 'rishi') {
+      throw new Error('Only Rishi can add this entry.')
+    }
+    return 'rishi'
+  }
+
   switch (entry.category) {
-    case ENTRY_CATEGORIES.PARENT_GOOD_THING:
+    case ENTRY_CATEGORIES.PARENT_GOOD_THING: {
+      const author = ensureParentAuthor()
       return {
         entryType: 'good_thing',
         content: entry.text,
         metadata: {
           category: entry.category,
-          author: toCanonicalRole(entry.author),
+          author,
           target: 'rishi',
         },
       }
-    case ENTRY_CATEGORIES.PARENT_GRATITUDE:
+    }
+    case ENTRY_CATEGORIES.PARENT_GRATITUDE: {
+      const author = ensureParentAuthor()
       return {
         entryType: 'gratitude',
         content: entry.text,
         metadata: {
           category: entry.category,
-          author: toCanonicalRole(entry.author),
+          author,
           target: 'rishi',
         },
       }
-    case ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER:
+    }
+    case ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER: {
+      const author = ensureChildAuthor()
       return {
         entryType: 'gratitude',
         content: entry.text,
         metadata: {
           category: entry.category,
-          author: toCanonicalRole(entry.author ?? 'Rishi'),
+          author,
           target: 'father',
         },
       }
-    case ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER:
+    }
+    case ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER: {
+      const author = ensureChildAuthor()
       return {
         entryType: 'gratitude',
         content: entry.text,
         metadata: {
           category: entry.category,
-          author: toCanonicalRole(entry.author ?? 'Rishi'),
+          author,
           target: 'mother',
         },
       }
-    case ENTRY_CATEGORIES.BETTER_CHOICE:
-    default:
+    }
+    case ENTRY_CATEGORIES.BETTER_CHOICE: {
+      const author = ensureParentAuthor()
+      const metadata = {
+        category: ENTRY_CATEGORIES.BETTER_CHOICE,
+        author,
+        target: 'rishi',
+      }
+      if (entry.context && Object.keys(entry.context).length > 0) {
+        metadata.context = entry.context
+      }
       return {
         entryType: 'better_choice',
         content: entry.text,
-        metadata: (() => {
-          const metadata = {
-            category: ENTRY_CATEGORIES.BETTER_CHOICE,
-            author: toCanonicalRole(entry.author),
-            target: 'rishi',
-          }
-          if (entry.context && Object.keys(entry.context).length > 0) {
-            metadata.context = entry.context
-          }
-          return metadata
-        })(),
+        metadata,
       }
+    }
+    default:
+      throw new Error('Unsupported entry category')
   }
 }
 
 export const EntriesProvider = ({ children }) => {
   const { token, user } = useAuth()
   const [state, dispatch] = useReducer(entriesReducer, initialState)
+
+  const normalizedUserRole = typeof user?.role === 'string' ? user.role.toLowerCase() : null
+  const normalizedFamilyRole = typeof user?.familyRole === 'string' ? user.familyRole.toLowerCase() : null
+
+  const parentAuthorLabel = useMemo(() => {
+    if (normalizedUserRole !== 'parent') return null
+    if (normalizedFamilyRole === 'mom') return 'Mom'
+    if (normalizedFamilyRole === 'dad') return 'Dad'
+    return null
+  }, [normalizedFamilyRole, normalizedUserRole])
+
+  const childAuthorLabel = useMemo(() => {
+    if (normalizedUserRole !== 'child') return null
+    if (normalizedFamilyRole === 'rishi') return 'Rishi'
+    return null
+  }, [normalizedFamilyRole, normalizedUserRole])
+
+  const submissionPermissions = useMemo(
+    () => ({
+      canSubmitParentEntries: Boolean(parentAuthorLabel),
+      canSubmitChildEntries: Boolean(childAuthorLabel),
+      canSubmitBetterChoices: Boolean(parentAuthorLabel),
+      canRespondToBetterChoices: Boolean(childAuthorLabel),
+      parentAuthorLabel,
+      childAuthorLabel,
+    }),
+    [childAuthorLabel, parentAuthorLabel],
+  )
 
   const loadEntries = useCallback(async () => {
     if (!token) {
@@ -290,13 +361,16 @@ export const EntriesProvider = ({ children }) => {
     if (!token) {
       return Promise.reject(new Error('Authentication required'))
     }
+    if (!user) {
+      return Promise.reject(new Error('We could not verify your profile. Please sign in again.'))
+    }
     if (!payload) return Promise.resolve([])
 
     const entries = Array.isArray(payload) ? payload : [payload]
 
     return entries.reduce(async (accPromise, current) => {
       const acc = await accPromise
-      const apiPayload = mapEntryToApiPayload(current)
+      const apiPayload = mapEntryToApiPayload(current, user)
       const created = await createJarEntry({ token, payload: apiPayload })
       const [normalized] = normalizeJarEntries([created])
       if (normalized) {
@@ -305,7 +379,7 @@ export const EntriesProvider = ({ children }) => {
       }
       return acc
     }, Promise.resolve([]))
-  }, [token])
+  }, [token, user])
 
   const respondToBetterChoice = useCallback((id, response) => {
     if (!token) {
@@ -374,6 +448,7 @@ export const EntriesProvider = ({ children }) => {
       error: state.error,
       refresh: loadEntries,
       currentUser: user,
+      submissionPermissions,
     }),
     [
       state.entries,
@@ -393,6 +468,7 @@ export const EntriesProvider = ({ children }) => {
       state.error,
       loadEntries,
       user,
+      submissionPermissions,
     ],
   )
 
