@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  parent
+  child
+}
+
+enum EntryType {
+  good_thing
+  gratitude
+  better_choice
+}
+
+enum NotificationType {
+  daily
+  weekly
+}
+
+model User {
+  id             String    @id @default(uuid())
+  familyId       String?
+  role           Role
+  firstName      String
+  lastName       String?
+  email          String    @unique
+  passwordHash   String
+  emailVerified  Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  family         Family?   @relation(fields: [familyId], references: [id])
+  jarEntries     JarEntry[]
+  auditLogs      AuditLog[]
+  invitations    FamilyInvitation[] @relation("InvitedBy")
+  verificationTokens EmailVerificationToken[]
+  resetTokens    PasswordResetToken[]
+}
+
+model Family {
+  id          String     @id @default(uuid())
+  familyName  String?
+  createdAt   DateTime   @default(now())
+  members     User[]
+  jarEntries  JarEntry[]
+  notifications Notification[]
+  invitations FamilyInvitation[]
+}
+
+model JarEntry {
+  id        String    @id @default(uuid())
+  familyId  String
+  userId    String
+  entryType EntryType
+  content   String
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  family    Family    @relation(fields: [familyId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String            @id @default(uuid())
+  familyId  String
+  type      NotificationType
+  sentAt    DateTime
+  createdAt DateTime          @default(now())
+  family    Family            @relation(fields: [familyId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  details   Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model FamilyInvitation {
+  id          String   @id @default(uuid())
+  familyId    String
+  email       String
+  role        Role
+  tokenHash   String   @unique
+  expiresAt   DateTime
+  invitedById String
+  createdAt   DateTime @default(now())
+  family      Family   @relation(fields: [familyId], references: [id])
+  invitedBy   User     @relation("InvitedBy", fields: [invitedById], references: [id])
+}
