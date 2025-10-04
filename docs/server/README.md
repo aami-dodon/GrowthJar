@@ -7,6 +7,7 @@ The Node.js server is powered by Express and Prisma. Feature slices under `serve
 - **Families**: Family creation, invitations, and membership acceptance workflows.
 - **Jar Entries**: CRUD APIs for good things, gratitude notes, better choices, and child responses.
 - **Notifications**: Manual trigger plus history for daily/weekly reminders.
+- **Notification Preferences**: CRUD for family-level reminder toggles and reflection time.
 - **Exports**: CSV and PDF exports of jar entries.
 - **Audit Logs**: System access protected endpoint for operational visibility.
 
