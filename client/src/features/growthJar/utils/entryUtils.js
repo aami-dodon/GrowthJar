@@ -104,8 +104,8 @@ export const computeEntryStats = (entries) => {
 
   const gratitudeByVoice = {
     parents: 0,
-    rishiToDad: 0,
-    rishiToMom: 0,
+    childToDad: 0,
+    childToMom: 0,
   }
 
   const lastSevenDays = dayjs().subtract(6, 'day').startOf('day')
@@ -121,10 +121,10 @@ export const computeEntryStats = (entries) => {
       gratitudeByVoice.parents += 1
     }
     if (entry.category === ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER) {
-      gratitudeByVoice.rishiToDad += 1
+      gratitudeByVoice.childToDad += 1
     }
     if (entry.category === ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER) {
-      gratitudeByVoice.rishiToMom += 1
+      gratitudeByVoice.childToMom += 1
     }
 
     if (dayjs(entry.createdAt).isSame(lastSevenDays, 'day') || dayjs(entry.createdAt).isAfter(lastSevenDays)) {

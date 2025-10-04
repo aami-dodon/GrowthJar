@@ -15,7 +15,7 @@ enum Role {
 enum FamilyRole {
   mom
   dad
-  rishi
+  child
 }
 
 enum EntryType {

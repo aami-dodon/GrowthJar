@@ -1,5 +1,5 @@
 {
-  "name": "rishis-jar-server",
+  "name": "gratitude-jar-server",
   "version": "0.1.0",
   "description": "API server for the family Growth Jar platform",
   "type": "module",

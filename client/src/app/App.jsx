@@ -13,7 +13,7 @@ const formatFamilyRole = (familyRole) => {
       return 'Mom'
     case 'dad':
       return 'Dad'
-    case 'rishi':
+    case 'child':
       return appCopy.childName
     default:
       return 'Family member'

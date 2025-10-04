@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 import { login as loginRequest } from '../api/authApi'
 
-const storageKey = 'rishisJar.auth'
+const storageKey = import.meta.env.VITE_APP_STORAGE_KEY ?? 'gratitudeJar.auth'
 const defaultState = { token: null, user: null, expiresIn: null }
 
 const AuthContext = createContext(undefined)

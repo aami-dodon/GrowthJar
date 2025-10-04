@@ -5,7 +5,7 @@
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'FamilyRole') THEN
-    CREATE TYPE "FamilyRole" AS ENUM ('mom', 'dad', 'rishi');
+    CREATE TYPE "FamilyRole" AS ENUM ('mom', 'dad', 'child');
   END IF;
 END$$;
 

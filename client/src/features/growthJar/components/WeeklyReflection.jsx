@@ -45,7 +45,7 @@ const WeeklyReflection = () => {
               label="Gratitude notes"
               value={stats.counts[ENTRY_TYPES.GRATITUDE]}
               tone="leaf"
-              helper={`Parents: ${stats.gratitudeByVoice.parents} • Dad: ${stats.gratitudeByVoice.rishiToDad} • Mom: ${stats.gratitudeByVoice.rishiToMom}`}
+              helper={`Parents: ${stats.gratitudeByVoice.parents} • Dad: ${stats.gratitudeByVoice.childToDad} • Mom: ${stats.gratitudeByVoice.childToMom}`}
             />
             <StatBadge
               label="Better choices"

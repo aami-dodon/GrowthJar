@@ -17,7 +17,7 @@ export const signupRules = [
   body('role').isIn(Object.values(USER_ROLES)).withMessage('Invalid role'),
   body('familyRole')
     .isIn(Object.values(FAMILY_ROLES))
-    .withMessage('familyRole must be mom, dad, or rishi')
+    .withMessage('familyRole must be mom, dad, or child')
     .bail()
     .custom((familyRole, { req }) => {
       const expectedRole = FAMILY_ROLE_TO_USER_ROLE[familyRole];

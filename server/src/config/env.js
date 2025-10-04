@@ -15,7 +15,7 @@ const requiredVariables = [
   'JWT_SECRET',
   'AUTH_MOM_EMAIL',
   'AUTH_DAD_EMAIL',
-  'AUTH_RISHI_EMAIL',
+  'AUTH_CHILD_EMAIL',
 ];
 
 requiredVariables.forEach((key) => {
@@ -38,12 +38,15 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
-  childName: process.env.CHILDS_NAME?.trim() || 'Rishi',
+  childName:
+    process.env.CHILD_NAME?.trim() ||
+    process.env.CHILDS_NAME?.trim() ||
+    'Child',
   corsOrigins: parseOrigins(process.env.CORS_ORIGINS),
   emailFrom:
     process.env.EMAIL_FROM ??
     process.env.EMAIL_SMTP_FROM ??
-    'no-reply@rishisjar.com',
+    'no-reply@gratitudejar.com',
   systemAccessToken: process.env.SYSTEM_ACCESS_TOKEN ?? null,
   resetTokenExpiresMinutes: process.env.RESET_TOKEN_EXPIRES_MINUTES
     ? Number(process.env.RESET_TOKEN_EXPIRES_MINUTES)
@@ -62,7 +65,7 @@ export const env = {
     from:
       process.env.EMAIL_SMTP_FROM ??
       process.env.EMAIL_FROM ??
-      'no-reply@rishisjar.com',
+      'no-reply@gratitudejar.com',
     testRecipient: process.env.EMAIL_SMTP_TEST_RECIPIENT ?? null,
   },
   notificationSchedules: {
@@ -72,6 +75,6 @@ export const env = {
   allowedFamilyEmails: {
     mom: process.env.AUTH_MOM_EMAIL,
     dad: process.env.AUTH_DAD_EMAIL,
-    rishi: process.env.AUTH_RISHI_EMAIL,
+    child: process.env.AUTH_CHILD_EMAIL,
   },
 };

@@ -9,18 +9,18 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-7500}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://username:password@host:5432/rishisjar}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://username:password@host:5432/gratitudejar}
       JWT_SECRET: ${JWT_SECRET:-change-me}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
       SYSTEM_ACCESS_TOKEN: ${SYSTEM_ACCESS_TOKEN:-system-access-secret}
       AUTH_MOM_EMAIL: ${AUTH_MOM_EMAIL:-mom@example.com}
       AUTH_DAD_EMAIL: ${AUTH_DAD_EMAIL:-dad@example.com}
-      AUTH_RISHI_EMAIL: ${AUTH_RISHI_EMAIL:-rishi@example.com}
+      AUTH_CHILD_EMAIL: ${AUTH_CHILD_EMAIL:-child@example.com}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
       CLIENT_APP_URL: ${CLIENT_APP_URL:-http://localhost:5173}
       RESET_TOKEN_EXPIRES_MINUTES: ${RESET_TOKEN_EXPIRES_MINUTES:-60}
       VERIFICATION_TOKEN_EXPIRES_MINUTES: ${VERIFICATION_TOKEN_EXPIRES_MINUTES:-1440}
-      EMAIL_FROM: ${EMAIL_FROM:-no-reply@rishisjar.com}
+      EMAIL_FROM: ${EMAIL_FROM:-no-reply@gratitudejar.com}
       EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-smtp.example.com}
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-587}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-apikey}

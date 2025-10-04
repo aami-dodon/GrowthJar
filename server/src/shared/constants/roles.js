@@ -8,7 +8,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     'family:create',
     'family:invite',
     'jar:create:good_thing',
-    'jar:create:gratitude_rishi',
+    'jar:create:gratitude_child',
     'jar:create:better_choice',
     'jar:view',
     'jar:export',
