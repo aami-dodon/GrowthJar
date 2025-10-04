@@ -3,11 +3,15 @@ import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_CATEGORIES, ENTRY_TYPES, formatDateLabel } from '../utils/entryUtils'
 import StatusPill from './StatusPill'
 
-const ParentChoices = ['Mom', 'Dad']
-
 const BetterChoiceSection = () => {
-  const { addEntries, pendingBetterChoices, respondToBetterChoice, entries } = useEntriesContext()
-  const [author, setAuthor] = useState(ParentChoices[0])
+  const {
+    addEntries,
+    pendingBetterChoices,
+    respondToBetterChoice,
+    entries,
+    currentUser,
+    submissionPermissions,
+  } = useEntriesContext()
   const [moment, setMoment] = useState('')
   const [desiredChoice, setDesiredChoice] = useState('')
   const [feedback, setFeedback] = useState('')
@@ -16,8 +20,15 @@ const BetterChoiceSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [respondingId, setRespondingId] = useState(null)
 
+  const { canSubmitBetterChoices, canRespondToBetterChoices, parentAuthorLabel } = submissionPermissions
+  const userRole = currentUser?.role ?? null
+
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (!canSubmitBetterChoices) {
+      setFeedback('Only Mom or Dad can add a better choice reflection.')
+      return
+    }
     if (isSubmitting) return
     if (!moment.trim() || !desiredChoice.trim()) {
       setFeedback('Share the moment and the better choice you want to practice together.')
@@ -28,7 +39,7 @@ const BetterChoiceSection = () => {
     try {
       await addEntries({
         category: ENTRY_CATEGORIES.BETTER_CHOICE,
-        author,
+        author: parentAuthorLabel,
         target: 'Rishi',
         text: `It would have been more better if ${moment.trim()}.`,
         context: {
@@ -47,6 +58,13 @@ const BetterChoiceSection = () => {
   }
 
   const handleRespond = async (entryId) => {
+    if (!canRespondToBetterChoices) {
+      setResponseErrors((prev) => ({
+        ...prev,
+        [entryId]: 'Only Rishi can close the loop on better choice reflections.',
+      }))
+      return
+    }
     const response = responses[entryId]?.trim()
     if (!response) return
     setRespondingId(entryId)
@@ -74,6 +92,11 @@ const BetterChoiceSection = () => {
     [entries],
   )
 
+  const parentFallbackMessage =
+    userRole === 'child'
+      ? 'Only Mom or Dad can add new better choice reflections. Rishi, your promises bloom on the right side.'
+      : 'Your profile needs a parent role to add better choice reflections.'
+
   return (
     <section className="grid gap-8 rounded-3xl border border-lavender-100 bg-white/80 p-6 shadow-xl shadow-lavender-100/60 backdrop-blur lg:grid-cols-[1.1fr_0.9fr]">
       <div className="flex flex-col gap-5">
@@ -81,8 +104,7 @@ const BetterChoiceSection = () => {
           <div>
             <h2 className="font-display text-3xl text-slate-900">Better Choice Coaching</h2>
             <p className="max-w-xl text-slate-600">
-              When tricky moments happen, we add them to the same jar — because learning is part of growing. Keep the language
-              gentle and loving.
+              When tricky moments happen, we add them to the same jar — because learning is part of growing. Keep the language gentle and loving.
             </p>
           </div>
           <span className="hidden lg:inline-flex">
@@ -91,59 +113,55 @@ const BetterChoiceSection = () => {
             </StatusPill>
           </span>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-wrap gap-3">
-            {ParentChoices.map((choice) => (
+        {canSubmitBetterChoices ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="flex flex-col gap-1 text-sm font-semibold text-slate-600">
+              <span>Writing as</span>
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-lavender-400 bg-lavender-100/70 px-4 py-2 text-sm font-semibold text-lavender-700 shadow-sm">
+                {parentAuthor}
+              </span>
+            </div>
+            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+              It would have been more better if...
+              <textarea
+                value={moment}
+                onChange={(event) => setMoment(event.target.value)}
+                rows={3}
+                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-lavender-400 focus:outline-none focus:ring-2 focus:ring-lavender-200"
+                placeholder="we had spoken kindly during the game."
+              />
+            </label>
+            <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
+              Next time, we hope to...
+              <textarea
+                value={desiredChoice}
+                onChange={(event) => setDesiredChoice(event.target.value)}
+                rows={3}
+                className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
+                placeholder="take a deep breath and share the toys with friends."
+              />
+            </label>
+            <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
+              <span>Keep it specific and loving. Rishi will add his plan below.</span>
               <button
-                key={choice}
-                type="button"
-                onClick={() => setAuthor(choice)}
-                className={
-                  author === choice
-                    ? 'rounded-full border border-lavender-500 bg-lavender-100/80 px-4 py-2 text-sm font-semibold text-lavender-700 shadow-md'
-                    : 'rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500 transition hover:border-lavender-300 hover:text-lavender-600'
-                }
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-full bg-gradient-to-r from-lavender-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-lavender-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {choice}
+                {isSubmitting ? 'Saving…' : 'Add to the jar with care'}
               </button>
-            ))}
+            </div>
+            {feedback && (
+              <p className="rounded-2xl bg-lavender-50 px-4 py-3 text-sm font-semibold text-lavender-700" role="status">
+                {feedback}
+              </p>
+            )}
+          </form>
+        ) : (
+          <div className="rounded-3xl border border-lavender-100 bg-white/70 px-5 py-6 text-sm font-semibold text-slate-600 shadow-inner">
+            {parentFallbackMessage}
           </div>
-          <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-            It would have been more better if...
-            <textarea
-              value={moment}
-              onChange={(event) => setMoment(event.target.value)}
-              rows={3}
-              className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-lavender-400 focus:outline-none focus:ring-2 focus:ring-lavender-200"
-              placeholder="we had spoken kindly during the game."
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-            Next time, we hope to...
-            <textarea
-              value={desiredChoice}
-              onChange={(event) => setDesiredChoice(event.target.value)}
-              rows={3}
-              className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
-              placeholder="take a deep breath and share the toys with friends."
-            />
-          </label>
-          <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
-            <span>Keep it specific and loving. Rishi will add his plan below.</span>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-full bg-gradient-to-r from-lavender-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-lavender-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting ? 'Saving…' : 'Add to the jar with care'}
-            </button>
-          </div>
-          {feedback && (
-            <p className="rounded-2xl bg-lavender-50 px-4 py-3 text-sm font-semibold text-lavender-700" role="status">
-              {feedback}
-            </p>
-          )}
-        </form>
+        )}
         {completedReflections.length > 0 && (
           <div className="rounded-3xl border border-slate-100 bg-white/70 p-4">
             <h3 className="font-semibold text-slate-700">Recent family follow-ups</h3>
@@ -188,32 +206,40 @@ const BetterChoiceSection = () => {
                 {entry.context?.desired && (
                   <p className="text-sm text-slate-500">Family hope: {entry.context.desired}</p>
                 )}
-                <label className="mt-3 flex flex-col gap-2 text-sm font-semibold text-slate-600">
-                  My promise:
-                  <textarea
-                    value={responses[entry.id] ?? ''}
-                    onChange={(event) =>
-                      setResponses((prev) => ({
-                        ...prev,
-                        [entry.id]: event.target.value,
-                      }))
-                    }
-                    rows={3}
-                    className="resize-none rounded-2xl border-slate-200 bg-sky-50 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-200"
-                    placeholder="take a deep breath and ask for help."
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleRespond(entry.id)}
-                  disabled={respondingId === entry.id}
-                  className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-leaf-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-200/40 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {respondingId === entry.id ? 'Saving…' : 'Add my better choice'}
-                </button>
-                {responseErrors[entry.id] && (
-                  <p className="mt-2 rounded-2xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700" role="status">
-                    {responseErrors[entry.id]}
+                {canRespondToBetterChoices ? (
+                  <>
+                    <label className="mt-3 flex flex-col gap-2 text-sm font-semibold text-slate-600">
+                      My promise:
+                      <textarea
+                        value={responses[entry.id] ?? ''}
+                        onChange={(event) =>
+                          setResponses((prev) => ({
+                            ...prev,
+                            [entry.id]: event.target.value,
+                          }))
+                        }
+                        rows={3}
+                        className="resize-none rounded-2xl border-slate-200 bg-sky-50 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                        placeholder="take a deep breath and ask for help."
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => handleRespond(entry.id)}
+                      disabled={respondingId === entry.id}
+                      className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-leaf-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-200/40 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {respondingId === entry.id ? 'Saving…' : 'Add my better choice'}
+                    </button>
+                    {responseErrors[entry.id] && (
+                      <p className="mt-2 rounded-2xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700" role="status">
+                        {responseErrors[entry.id]}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="mt-3 rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-slate-600">
+                    Only Rishi can add the promise that closes this reflection.
                   </p>
                 )}
               </li>

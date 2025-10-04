@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.2.1] - 2024-06-08
+### Changed
+- Locked daily gratitude and better choice submissions to the signed-in family member on both the UI and API so moms, dads, and Rishi can only add their own slips.
+- Simplified growth jar forms to show only the applicable entry tools for each role and clarified feedback messaging.
+
 # [0.2.0] - 2024-06-07
 ### Added
 - Authentication landing page with mom/dad/Rishi specific sign-up flows, password reset, and email verification UX.
