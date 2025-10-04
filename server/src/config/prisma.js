@@ -11,6 +11,6 @@ export const prisma = new PrismaClient({
   log: env.nodeEnv === 'production' ? ['error'] : ['query', 'info', 'warn', 'error'],
 });
 
-prisma.$on('beforeExit', () => {
+process.on('beforeExit', () => {
   logger.info({ message: 'Prisma client disconnecting' });
 });
