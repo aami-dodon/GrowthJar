@@ -1,4 +1,4 @@
-const rawChildName = import.meta.env.VITE_CHILDS_NAME?.trim()
+const rawChildName = import.meta.env.VITE_CHILD_NAME?.trim()
 
 /**
  * Formats the provided name into a possessive phrase using a curly apostrophe.
@@ -18,7 +18,7 @@ const toPossessive = (name) => {
  */
 const toSlug = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
-const childName = rawChildName && rawChildName.length > 0 ? rawChildName : 'Rishi'
+const childName = rawChildName && rawChildName.length > 0 ? rawChildName : 'Child'
 const childPossessiveName = toPossessive(childName)
 
 export const appCopy = {

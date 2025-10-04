@@ -8,6 +8,6 @@ process.env.CORS_ORIGINS = '';
 process.env.EMAIL_FROM = 'no-reply@test.com';
 process.env.AUTH_MOM_EMAIL = process.env.AUTH_MOM_EMAIL ?? 'mom@example.com';
 process.env.AUTH_DAD_EMAIL = process.env.AUTH_DAD_EMAIL ?? 'dad@example.com';
-process.env.AUTH_RISHI_EMAIL = process.env.AUTH_RISHI_EMAIL ?? 'rishi@example.com';
+process.env.AUTH_CHILD_EMAIL = process.env.AUTH_CHILD_EMAIL ?? 'child@example.com';
 
 jest.setTimeout(15000);

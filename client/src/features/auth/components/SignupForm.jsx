@@ -16,7 +16,7 @@ const FAMILY_ROLES = [
     accent: 'bg-sky-100 text-sky-600',
   },
   {
-    value: 'rishi',
+    value: 'child',
     label: appCopy.childName,
     description: `${appCopy.childName} keeps the storytelling playful.`,
     accent: 'bg-leaf-100 text-leaf-600',
@@ -63,7 +63,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
 
     setLoading(true)
     try {
-      const role = formData.familyRole === 'rishi' ? 'child' : 'parent'
+      const role = formData.familyRole === 'child' ? 'child' : 'parent'
       await signupRequest({
         email: formData.email,
         password: formData.password,

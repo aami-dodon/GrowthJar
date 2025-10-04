@@ -4,7 +4,7 @@
 - `id` (UUID, PK)
 - `familyId` (UUID, FK -> Families.id, nullable)
 - `role` (`parent` | `child`)
-- `familyRole` (`mom` | `dad` | `rishi`, unique, nullable until an allowed signup assigns it)
+- `familyRole` (`mom` | `dad` | `child`, unique, nullable until an allowed signup assigns it)
 - `firstName` (string, required)
 - `lastName` (string, optional)
 - `email` (unique string)
@@ -49,7 +49,7 @@
 - `createdAt` (timestamp)
 
 ## Enums
-- `FamilyRole` — `mom`, `dad`, `rishi`
+- `FamilyRole` — `mom`, `dad`, `child`
 
 ## PasswordResetTokens
 - `id` (UUID, PK)

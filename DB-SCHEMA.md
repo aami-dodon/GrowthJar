@@ -10,6 +10,6 @@ The relational schema is managed through Prisma. Core tables:
 - **EmailVerificationTokens** — hashed tokens for email verification flow.
 - **PasswordResetTokens** — hashed tokens for password reset.
 - **FamilyInvitations** — invitation tokens for onboarding new members.
-- **FamilyRole enum** — restricts account creation to `mom`, `dad`, and `rishi` (one record each via a unique constraint).
+- **FamilyRole enum** — restricts account creation to `mom`, `dad`, and `child` (one record each via a unique constraint).
 
 See `server/prisma/schema.prisma` and `docs/server/models.md` for field-level details.

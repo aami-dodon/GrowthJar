@@ -1,6 +1,6 @@
-# Rishi's Jar
+# Gratitude Jar
 
-Family gratitude and growth tracker with a PERN stack. The frontend (Vite + React) lives in `/client` and this update introduces the Express/Prisma backend under `/server`. Authentication now gates the experience so only the configured mom, dad, and Rishi accounts can access the jar after verifying their emails.
+Family gratitude and growth tracker with a PERN stack. The frontend (Vite + React) lives in `/client` and this update introduces the Express/Prisma backend under `/server`. Authentication now gates the experience so only the configured mom, dad, and child accounts can access the jar after verifying their emails.
 
 ## Getting Started (Server)
 1. Install dependencies:
@@ -11,7 +11,7 @@ Family gratitude and growth tracker with a PERN stack. The frontend (Vite + Reac
 2. Copy `.env.example` to `.env` and populate database + secrets.
 
 3. Apply migrations (after configuring Prisma) from the `/server` directory:
-   - Set `AUTH_MOM_EMAIL`, `AUTH_DAD_EMAIL`, and `AUTH_RISHI_EMAIL` to the exact addresses that should be able to register.
+   - Set `AUTH_MOM_EMAIL`, `AUTH_DAD_EMAIL`, and `AUTH_CHILD_EMAIL` to the exact addresses that should be able to register. Use the `CHILD_NAME` environment variable to control how the child is referenced throughout the experience.
 3. Apply migrations (after configuring Prisma) to sync the `User` table with the new `FamilyRole` column:
    ```bash
    npm run prisma:migrate

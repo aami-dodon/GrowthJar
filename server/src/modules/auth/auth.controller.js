@@ -174,7 +174,7 @@ const sendVerificationPage = (res, statusCode, options) => {
   res.status(statusCode).type('html').send(renderVerificationPage(options));
 };
 
-const clientHomeUrl = () => env.clientAppUrl ?? 'https://rishisjar.com';
+const clientHomeUrl = () => env.clientAppUrl ?? 'https://gratitudejar.com';
 
 export const handleVerifyEmailLink = async (req, res) => {
   const tokenParam = req.query.token;

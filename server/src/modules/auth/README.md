@@ -7,4 +7,4 @@ This module owns the server-side capabilities for the **auth** feature slice. It
 - Coordinate with Prisma for persistence.
 - Emit audit logs for significant events.
 - Enforce security, validation, and RBAC guarantees.
-- Restrict signups to the configured mom, dad, and Rishi accounts and drive email-based verification flows.
+- Restrict signups to the configured mom, dad, and child accounts (driven by the `CHILD_NAME` and `AUTH_CHILD_EMAIL` variables) and drive email-based verification flows.

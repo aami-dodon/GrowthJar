@@ -93,7 +93,7 @@ const canonicalRoleMap = new Map([
   ['mother', 'Mom'],
   ['dad', 'Dad'],
   ['father', 'Dad'],
-  ['rishi', appCopy.childName],
+  ['child', appCopy.childName],
 ])
 
 const toDisplayName = (value) => {
@@ -107,7 +107,7 @@ const toCanonicalRole = (value) => {
   const normalized = value.toLowerCase()
   if (['mom', 'mother'].includes(normalized)) return 'mom'
   if (['dad', 'father'].includes(normalized)) return 'dad'
-  if (normalized === 'rishi') return 'rishi'
+  if (normalized === 'child') return 'child'
   return value
 }
 
@@ -222,13 +222,13 @@ const mapEntryToApiPayload = (entry, user) => {
     if (normalizedUserRole !== 'child') {
       throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
-    if (normalizedFamilyRole !== 'rishi') {
+    if (normalizedFamilyRole !== 'child') {
       throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
-    if (normalizedEntryAuthor && normalizedEntryAuthor !== 'rishi') {
+    if (normalizedEntryAuthor && normalizedEntryAuthor !== 'child') {
       throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
-    return 'rishi'
+    return 'child'
   }
 
   switch (entry.category) {
@@ -240,7 +240,7 @@ const mapEntryToApiPayload = (entry, user) => {
         metadata: {
           category: entry.category,
           author,
-          target: 'rishi',
+          target: 'child',
         },
       }
     }
@@ -252,7 +252,7 @@ const mapEntryToApiPayload = (entry, user) => {
         metadata: {
           category: entry.category,
           author,
-          target: 'rishi',
+          target: 'child',
         },
       }
     }
@@ -285,7 +285,7 @@ const mapEntryToApiPayload = (entry, user) => {
       const metadata = {
         category: ENTRY_CATEGORIES.BETTER_CHOICE,
         author,
-        target: 'rishi',
+        target: 'child',
       }
       if (entry.context && Object.keys(entry.context).length > 0) {
         metadata.context = entry.context
@@ -317,7 +317,7 @@ export const EntriesProvider = ({ children }) => {
 
   const childAuthorLabel = useMemo(() => {
     if (normalizedUserRole !== 'child') return null
-    if (normalizedFamilyRole === 'rishi') return appCopy.childName
+    if (normalizedFamilyRole === 'child') return appCopy.childName
     return null
   }, [normalizedFamilyRole, normalizedUserRole])
 

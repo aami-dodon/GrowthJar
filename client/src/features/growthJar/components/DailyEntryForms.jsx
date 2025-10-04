@@ -38,7 +38,7 @@ const DailyEntryForms = () => {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GOOD_THING,
         author: parentAuthorLabel,
-        target: 'rishi',
+        target: 'child',
         text: parentGoodThing.trim(),
       })
     }
@@ -46,7 +46,7 @@ const DailyEntryForms = () => {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GRATITUDE,
         author: parentAuthorLabel,
-        target: 'rishi',
+        target: 'child',
         text: parentGratitude.trim(),
       })
     }

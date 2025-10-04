@@ -19,14 +19,14 @@ const canonicalizeFamilyRole = (value) => {
   const normalized = value.trim().toLowerCase();
   if (['mom', 'mother'].includes(normalized)) return FAMILY_ROLES.MOM;
   if (['dad', 'father'].includes(normalized)) return FAMILY_ROLES.DAD;
-  if (['rishi'].includes(normalized)) return FAMILY_ROLES.RISHI;
+  if (['child', 'kid'].includes(normalized)) return FAMILY_ROLES.CHILD;
   return normalized;
 };
 
 const canonicalizeTarget = (value) => {
   if (!value || typeof value !== 'string') return null;
   const normalized = value.trim().toLowerCase();
-  if (['rishi'].includes(normalized)) return 'rishi';
+  if (['child', 'kid'].includes(normalized)) return 'child';
   if (['mom', 'mother'].includes(normalized)) return 'mother';
   if (['dad', 'father'].includes(normalized)) return 'father';
   return normalized;
@@ -64,10 +64,10 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
     sanitizedMetadata.author = familyRole;
 
     if (['good_thing', 'gratitude', 'better_choice'].includes(entryType)) {
-      if (sanitizedMetadata.target && sanitizedMetadata.target !== 'rishi') {
+      if (sanitizedMetadata.target && sanitizedMetadata.target !== 'child') {
         throw createHttpError(403, `Parents can only target ${childProfile.name} with these entries`);
       }
-      sanitizedMetadata.target = 'rishi';
+      sanitizedMetadata.target = 'child';
     }
 
     if (entryType === 'better_choice' && sanitizedMetadata.responseTo) {
@@ -77,15 +77,15 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
   }
 
   if (user.role === 'child') {
-    if (familyRole !== FAMILY_ROLES.RISHI) {
+    if (familyRole !== FAMILY_ROLES.CHILD) {
       throw createHttpError(403, `Only ${childProfile.name} can submit child entries`);
     }
 
-    if (sanitizedMetadata.author && sanitizedMetadata.author !== FAMILY_ROLES.RISHI) {
+    if (sanitizedMetadata.author && sanitizedMetadata.author !== FAMILY_ROLES.CHILD) {
       throw createHttpError(403, 'Children can only submit entries as themselves');
     }
 
-    sanitizedMetadata.author = FAMILY_ROLES.RISHI;
+    sanitizedMetadata.author = FAMILY_ROLES.CHILD;
 
     if (entryType === 'gratitude') {
       if (!['mother', 'father'].includes(sanitizedMetadata.target)) {
@@ -97,7 +97,7 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
       if (!sanitizedMetadata.responseTo) {
         throw createHttpError(400, 'Child responses must reference a better choice entry');
       }
-      sanitizedMetadata.target = sanitizedMetadata.target ?? 'rishi';
+      sanitizedMetadata.target = sanitizedMetadata.target ?? 'child';
     }
   }
 
@@ -202,7 +202,7 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
   if (user.role !== 'child') {
     throw createHttpError(403, 'Only children can respond to better choices');
   }
-  if (canonicalizeFamilyRole(user.familyRole) !== FAMILY_ROLES.RISHI) {
+  if (canonicalizeFamilyRole(user.familyRole) !== FAMILY_ROLES.CHILD) {
       throw createHttpError(403, `Only ${childProfile.name} can respond to better choices`);
   }
 
@@ -215,7 +215,7 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
       metadata: {
         responseTo: entryId,
         role: 'child',
-        author: FAMILY_ROLES.RISHI,
+        author: FAMILY_ROLES.CHILD,
       },
     },
   });

@@ -14,7 +14,7 @@ const createPossessive = (name) => {
   return /s$/i.test(trimmed) ? `${trimmed}\u2019` : `${trimmed}\u2019s`
 }
 
-const childName = env.childName?.trim() ? env.childName.trim() : 'Rishi'
+const childName = env.childName?.trim() ? env.childName.trim() : 'Child'
 const childPossessiveName = createPossessive(childName)
 
 export const childProfile = {

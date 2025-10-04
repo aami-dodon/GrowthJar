@@ -41,7 +41,7 @@ const BetterChoiceSection = () => {
       await addEntries({
         category: ENTRY_CATEGORIES.BETTER_CHOICE,
         author: parentAuthorLabel,
-        target: 'rishi',
+        target: 'child',
         text: `It would have been more better if ${moment.trim()}.`,
         context: {
           desired: desiredChoice.trim(),
