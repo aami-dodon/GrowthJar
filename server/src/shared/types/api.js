@@ -9,6 +9,7 @@
  * @property {string} id
  * @property {string} email
  * @property {string} role
+ * @property {string | null} familyRole
  * @property {boolean} emailVerified
  * @property {string} firstName
  * @property {string | null} lastName

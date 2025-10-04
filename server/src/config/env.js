@@ -10,7 +10,13 @@ const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
 
 loadEnv({ path: path.join(rootDir, envFile) });
 
-const requiredVariables = ['DATABASE_URL', 'JWT_SECRET'];
+const requiredVariables = [
+  'DATABASE_URL',
+  'JWT_SECRET',
+  'AUTH_MOM_EMAIL',
+  'AUTH_DAD_EMAIL',
+  'AUTH_RISHI_EMAIL',
+];
 
 requiredVariables.forEach((key) => {
   if (!process.env[key]) {
@@ -61,5 +67,10 @@ export const env = {
   notificationSchedules: {
     dailyCron: process.env.NOTIFICATION_DAILY_CRON ?? null,
     weeklyCron: process.env.NOTIFICATION_WEEKLY_CRON ?? null,
+  },
+  allowedFamilyEmails: {
+    mom: process.env.AUTH_MOM_EMAIL,
+    dad: process.env.AUTH_DAD_EMAIL,
+    rishi: process.env.AUTH_RISHI_EMAIL,
   },
 };
