@@ -32,7 +32,7 @@ npm run dev
 The frontend launches with the authentication landing page. New sign-ups must verify their email before gaining access to the jar experience.
 
 ## Running with Docker
-1. Copy `.env.example` to `.env` if you need to override any defaults. The compose setup will also fall back to `.env.example` directly when no `.env` file is present.
+1. Copy `.env.example` to `.env` and update any secrets or database connection details you need. Docker Compose loads the defaults from `.env.example`, but every variable can be overridden by setting the same key in your local `.env` file before running the stack.
 2. Build and start the containers:
    ```bash
    docker compose up --build
