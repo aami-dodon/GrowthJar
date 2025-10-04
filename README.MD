@@ -19,6 +19,14 @@ Family gratitude and growth tracker with a PERN stack. The frontend (Vite + Reac
    ```
 5. Access health check at `http://localhost:4000/health` and Swagger docs at `http://localhost:4000/docs`.
 
+## Running with Docker
+1. Copy `.env.example` to `.env` if you need to override any defaults. The compose setup will also fall back to `.env.example` directly when no `.env` file is present.
+2. Build and start the containers:
+   ```bash
+   docker compose up --build
+   ```
+3. The API will be available on `http://localhost:4000` and the frontend will be served on `http://localhost:5173` (port mappings can be adjusted via the environment variables in `.env.example`).
+
 ## Testing
 ```bash
 cd server
