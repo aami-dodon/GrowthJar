@@ -118,7 +118,7 @@ const BetterChoiceSection = () => {
             <div className="flex flex-col gap-1 text-sm font-semibold text-slate-600">
               <span>Writing as</span>
               <span className="inline-flex w-fit items-center gap-2 rounded-full border border-lavender-400 bg-lavender-100/70 px-4 py-2 text-sm font-semibold text-lavender-700 shadow-sm">
-                {parentAuthor}
+                {parentAuthorLabel}
               </span>
             </div>
             <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
