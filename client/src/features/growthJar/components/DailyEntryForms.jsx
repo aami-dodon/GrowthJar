@@ -11,8 +11,10 @@ const DailyEntryForms = () => {
   const [parentGratitude, setParentGratitude] = useState('')
   const [childGratitudeDad, setChildGratitudeDad] = useState('')
   const [childGratitudeMom, setChildGratitudeMom] = useState('')
-  const [parentFeedback, setParentFeedback] = useState('')
-  const [childFeedback, setChildFeedback] = useState('')
+  const [parentAlert, setParentAlert] = useState(null)
+  const [childAlert, setChildAlert] = useState(null)
+  const [isParentSubmitting, setIsParentSubmitting] = useState(false)
+  const [isChildSubmitting, setIsChildSubmitting] = useState(false)
 
   const resetParentForm = () => {
     setParentGoodThing('')
@@ -24,8 +26,9 @@ const DailyEntryForms = () => {
     setChildGratitudeMom('')
   }
 
-  const handleParentSubmit = (event) => {
+  const handleParentSubmit = async (event) => {
     event.preventDefault()
+    if (isParentSubmitting) return
     const entries = []
     if (parentGoodThing.trim()) {
       entries.push({
@@ -45,18 +48,32 @@ const DailyEntryForms = () => {
     }
 
     if (!entries.length) {
-      setParentFeedback('Add a note above before submitting.')
+      setParentAlert({ type: 'error', message: 'Add a note above before submitting.' })
       return
     }
 
-    addEntries(entries)
-    setParentFeedback(`Beautiful! ${entries.length} slip${entries.length > 1 ? 's' : ''} were added to the jar.`)
-    resetParentForm()
-    setTimeout(() => setParentFeedback(''), 3500)
+    setIsParentSubmitting(true)
+    try {
+      await addEntries(entries)
+      setParentAlert({
+        type: 'success',
+        message: `Beautiful! ${entries.length} slip${entries.length > 1 ? 's' : ''} were added to the jar.`,
+      })
+      resetParentForm()
+      setTimeout(() => setParentAlert(null), 3500)
+    } catch (error) {
+      setParentAlert({
+        type: 'error',
+        message: error.message ?? 'We could not add your slips right now. Please try again in a moment.',
+      })
+    } finally {
+      setIsParentSubmitting(false)
+    }
   }
 
-  const handleChildSubmit = (event) => {
+  const handleChildSubmit = async (event) => {
     event.preventDefault()
+    if (isChildSubmitting) return
     const entries = []
     if (childGratitudeDad.trim()) {
       entries.push({
@@ -76,14 +93,24 @@ const DailyEntryForms = () => {
     }
 
     if (!entries.length) {
-      setChildFeedback('Rishi, share one thing you are grateful for!')
+      setChildAlert({ type: 'error', message: 'Rishi, share one thing you are grateful for!' })
       return
     }
 
-    addEntries(entries)
-    setChildFeedback('Yay! Your gratitude notes are safely tucked into the jar.')
-    resetChildForm()
-    setTimeout(() => setChildFeedback(''), 3500)
+    setIsChildSubmitting(true)
+    try {
+      await addEntries(entries)
+      setChildAlert({ type: 'success', message: 'Yay! Your gratitude notes are safely tucked into the jar.' })
+      resetChildForm()
+      setTimeout(() => setChildAlert(null), 3500)
+    } catch (error) {
+      setChildAlert({
+        type: 'error',
+        message: error.message ?? 'Hmm, the jar could not save your gratitude just yet. Try again soon.',
+      })
+    } finally {
+      setIsChildSubmitting(false)
+    }
   }
 
   return (
@@ -104,7 +131,7 @@ const DailyEntryForms = () => {
             <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sky-600">
               <span aria-hidden="true">🧑‍🤝‍🧑</span> Parent reflection
             </span>
-            <h3 className="font-display text-2xl text-slate-900">Celebrate Rishi's glow-up moments</h3>
+            <h3 className="font-display text-2xl text-slate-900">Celebrate Rishi&rsquo;s glow-up moments</h3>
           </header>
           <div className="grid gap-4">
             <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
@@ -137,7 +164,7 @@ const DailyEntryForms = () => {
               />
             </label>
             <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-              Today we're grateful to Rishi for...
+              Today we&rsquo;re grateful to Rishi for...
               <textarea
                 value={parentGratitude}
                 onChange={(event) => setParentGratitude(event.target.value)}
@@ -151,14 +178,22 @@ const DailyEntryForms = () => {
             <p className="text-sm text-slate-500">Add at least one note a day to keep the jar buzzing with love.</p>
             <button
               type="submit"
-              className="rounded-full bg-gradient-to-r from-leaf-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-leaf-300/40 transition hover:scale-[1.02]"
+              disabled={isParentSubmitting}
+              className="rounded-full bg-gradient-to-r from-leaf-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-leaf-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Drop slips into the jar
+              {isParentSubmitting ? 'Saving…' : 'Drop slips into the jar'}
             </button>
           </div>
-          {parentFeedback && (
-            <p className="rounded-2xl bg-leaf-50 px-4 py-3 text-sm font-semibold text-leaf-700" role="status">
-              {parentFeedback}
+          {parentAlert && (
+            <p
+              className={
+                parentAlert.type === 'error'
+                  ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
+                  : 'rounded-2xl bg-leaf-50 px-4 py-3 text-sm font-semibold text-leaf-700'
+              }
+              role="status"
+            >
+              {parentAlert.message}
             </p>
           )}
         </form>
@@ -169,7 +204,7 @@ const DailyEntryForms = () => {
         >
           <header className="flex flex-col gap-2">
             <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sunshine-600">
-              <span aria-hidden="true">🧒</span> Rishi's gratitude
+              <span aria-hidden="true">🧒</span> Rishi&rsquo;s gratitude
             </span>
             <h3 className="font-display text-2xl text-slate-900">Thank you, Mom and Dad!</h3>
           </header>
@@ -199,14 +234,22 @@ const DailyEntryForms = () => {
             <p className="text-sm text-slate-500">Kind words water our family garden. Share one every night!</p>
             <button
               type="submit"
-              className="rounded-full bg-gradient-to-r from-sunshine-500 to-lavender-500 px-5 py-2 font-semibold text-white shadow-lg shadow-sunshine-300/40 transition hover:scale-[1.02]"
+              disabled={isChildSubmitting}
+              className="rounded-full bg-gradient-to-r from-sunshine-500 to-lavender-500 px-5 py-2 font-semibold text-white shadow-lg shadow-sunshine-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Send love to the jar
+              {isChildSubmitting ? 'Saving…' : 'Send love to the jar'}
             </button>
           </div>
-          {childFeedback && (
-            <p className="rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700" role="status">
-              {childFeedback}
+          {childAlert && (
+            <p
+              className={
+                childAlert.type === 'error'
+                  ? 'rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'
+                  : 'rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-sky-700'
+              }
+              role="status"
+            >
+              {childAlert.message}
             </p>
           )}
         </form>

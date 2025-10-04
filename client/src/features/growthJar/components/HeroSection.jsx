@@ -19,7 +19,7 @@ const HeroSection = () => {
             <span className="text-base">✨</span> One jar. Endless family moments.
           </span>
           <h1 className="font-display text-4xl leading-tight text-slate-900 sm:text-5xl">
-            Rishi's <span className="text-sky-600">Growth Jar</span>
+            Rishi&rsquo;s <span className="text-sky-600">Growth Jar</span>
           </h1>
           <p className="text-lg text-slate-600 sm:text-xl">
             A shared space where Rishi and parents celebrate wins, practice gratitude, and learn from better choices. Build a
@@ -30,7 +30,7 @@ const HeroSection = () => {
               href="#daily-entries"
               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-leaf-400 to-sky-400 px-6 py-3 font-semibold text-white shadow-lg shadow-leaf-300/40 transition hover:scale-[1.02] hover:shadow-glow"
             >
-              Start today's slips <span className="transition group-hover:translate-x-1">→</span>
+              Start today&rsquo;s slips <span className="transition group-hover:translate-x-1">→</span>
             </a>
             <a
               href="#weekly-reflection"

@@ -12,34 +12,60 @@ const BetterChoiceSection = () => {
   const [desiredChoice, setDesiredChoice] = useState('')
   const [feedback, setFeedback] = useState('')
   const [responses, setResponses] = useState({})
+  const [responseErrors, setResponseErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [respondingId, setRespondingId] = useState(null)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    if (isSubmitting) return
     if (!moment.trim() || !desiredChoice.trim()) {
       setFeedback('Share the moment and the better choice you want to practice together.')
       return
     }
 
-    addEntries({
-      category: ENTRY_CATEGORIES.BETTER_CHOICE,
-      author,
-      target: 'Rishi',
-      text: `It would have been more better if ${moment.trim()}.`,
-      context: {
-        desired: desiredChoice.trim(),
-      },
-    })
-    setMoment('')
-    setDesiredChoice('')
-    setFeedback('Thanks for guiding the moment with compassion. Invite Rishi to add his next-step plan!')
-    setTimeout(() => setFeedback(''), 4000)
+    setIsSubmitting(true)
+    try {
+      await addEntries({
+        category: ENTRY_CATEGORIES.BETTER_CHOICE,
+        author,
+        target: 'Rishi',
+        text: `It would have been more better if ${moment.trim()}.`,
+        context: {
+          desired: desiredChoice.trim(),
+        },
+      })
+      setMoment('')
+      setDesiredChoice('')
+      setFeedback('Thanks for guiding the moment with compassion. Invite Rishi to add his next-step plan!')
+      setTimeout(() => setFeedback(''), 4000)
+    } catch (error) {
+      setFeedback(error.message ?? 'We could not save this reflection. Please try again soon.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  const handleRespond = (entryId) => {
+  const handleRespond = async (entryId) => {
     const response = responses[entryId]?.trim()
     if (!response) return
-    respondToBetterChoice(entryId, `Next time, I could ${response}`)
-    setResponses((prev) => ({ ...prev, [entryId]: '' }))
+    setRespondingId(entryId)
+    setResponseErrors((prev) => {
+      const next = { ...prev }
+      delete next[entryId]
+      return next
+    })
+    try {
+      await respondToBetterChoice(entryId, `Next time, I could ${response}`)
+      setResponses((prev) => ({ ...prev, [entryId]: '' }))
+    } catch (error) {
+      setResponseErrors((prev) => ({
+        ...prev,
+        [entryId]: error.message ?? 'Unable to add this promise right now. Please try again.',
+      }))
+    } finally {
+      setRespondingId(null)
+    }
   }
 
   const completedReflections = useMemo(
@@ -106,9 +132,10 @@ const BetterChoiceSection = () => {
             <span>Keep it specific and loving. Rishi will add his plan below.</span>
             <button
               type="submit"
-              className="rounded-full bg-gradient-to-r from-lavender-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-lavender-300/40 transition hover:scale-[1.02]"
+              disabled={isSubmitting}
+              className="rounded-full bg-gradient-to-r from-lavender-500 to-sky-500 px-5 py-2 font-semibold text-white shadow-lg shadow-lavender-300/40 transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Add to the jar with care
+              {isSubmitting ? 'Saving…' : 'Add to the jar with care'}
             </button>
           </div>
           {feedback && (
@@ -141,7 +168,7 @@ const BetterChoiceSection = () => {
       <div className="flex flex-col gap-4 rounded-3xl border border-slate-100 bg-sky-50/60 p-5">
         <header className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-display text-2xl text-slate-900">Rishi's gentle promise</h3>
+            <h3 className="font-display text-2xl text-slate-900">Rishi&rsquo;s gentle promise</h3>
             <p className="text-sm text-slate-600">Reply with “Next time, I could...” to close the loop with kindness.</p>
           </div>
           <StatusPill icon="⏳" variant="sky">
@@ -179,10 +206,16 @@ const BetterChoiceSection = () => {
                 <button
                   type="button"
                   onClick={() => handleRespond(entry.id)}
-                  className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-leaf-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-200/40 transition hover:scale-[1.01]"
+                  disabled={respondingId === entry.id}
+                  className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-leaf-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-200/40 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Add my better choice
+                  {respondingId === entry.id ? 'Saving…' : 'Add my better choice'}
                 </button>
+                {responseErrors[entry.id] && (
+                  <p className="mt-2 rounded-2xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700" role="status">
+                    {responseErrors[entry.id]}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

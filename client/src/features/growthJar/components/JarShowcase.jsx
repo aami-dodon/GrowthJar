@@ -12,7 +12,7 @@ const filterOptions = [
 ]
 
 const JarShowcase = () => {
-  const { entries, filteredEntries, filter, setFilter, lastAddedId, resetLastAdded } = useEntriesContext()
+  const { entries, filteredEntries, filter, setFilter, lastAddedId, resetLastAdded, loading, error } = useEntriesContext()
 
   const recentEntries = useMemo(() => filteredEntries.slice(0, 6), [filteredEntries])
 
@@ -58,40 +58,51 @@ const JarShowcase = () => {
           ))}
         </div>
         <div className="flex-1 overflow-hidden rounded-3xl border border-slate-100 bg-white/80">
+          {error && !loading && (
+            <div className="mx-4 mt-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="status">
+              {error}
+            </div>
+          )}
           <ul className="h-full space-y-3 overflow-y-auto px-4 py-4 pr-3 text-sm text-slate-600">
-            {recentEntries.length === 0 && (
+            {loading ? (
+              <li className="flex h-40 flex-col items-center justify-center gap-3 text-slate-400">
+                <span className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-sky-500" aria-hidden="true" />
+                <span>Loading jar entries…</span>
+              </li>
+            ) : recentEntries.length === 0 ? (
               <li className="flex h-40 flex-col items-center justify-center gap-2 text-slate-400">
                 <span className="text-4xl">😊</span>
                 <p>Nothing here yet. Add a slip to see it glow inside the jar!</p>
               </li>
+            ) : (
+              recentEntries.map((entry) => (
+                <li
+                  key={entry.id}
+                  className="rounded-3xl border border-slate-100 bg-gradient-to-r from-white via-sky-50/60 to-white px-4 py-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-slate-800">
+                        <span className="mr-2 text-lg">{entry.meta?.icon}</span>
+                        {entry.meta?.label}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">{entry.text}</p>
+                      {entry.context?.desired && (
+                        <p className="mt-1 text-xs text-slate-500">Family hope: {entry.context.desired}</p>
+                      )}
+                      {entry.response && <p className="mt-2 text-sm text-leaf-600">{entry.response}</p>}
+                    </div>
+                    <div className="text-right text-xs font-semibold uppercase tracking-widest text-slate-400">
+                      <span className="block">{formatDateLabel(entry.createdAt)}</span>
+                      <span>{formatTimeLabel(entry.createdAt)}</span>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-xs font-semibold text-slate-500">
+                    By {entry.author} {entry.target && <span className="text-slate-400">→ {entry.target}</span>}
+                  </p>
+                </li>
+              ))
             )}
-            {recentEntries.map((entry) => (
-              <li
-                key={entry.id}
-                className="rounded-3xl border border-slate-100 bg-gradient-to-r from-white via-sky-50/60 to-white px-4 py-4 shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      <span className="mr-2 text-lg">{entry.meta?.icon}</span>
-                      {entry.meta?.label}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-600">{entry.text}</p>
-                    {entry.context?.desired && (
-                      <p className="mt-1 text-xs text-slate-500">Family hope: {entry.context.desired}</p>
-                    )}
-                    {entry.response && <p className="mt-2 text-sm text-leaf-600">{entry.response}</p>}
-                  </div>
-                  <div className="text-right text-xs font-semibold uppercase tracking-widest text-slate-400">
-                    <span className="block">{formatDateLabel(entry.createdAt)}</span>
-                    <span>{formatTimeLabel(entry.createdAt)}</span>
-                  </div>
-                </div>
-                <p className="mt-2 text-xs font-semibold text-slate-500">
-                  By {entry.author} {entry.target && <span className="text-slate-400">→ {entry.target}</span>}
-                </p>
-              </li>
-            ))}
           </ul>
         </div>
       </div>
