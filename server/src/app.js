@@ -8,6 +8,7 @@ import { generalLimiter } from './middlewares/rateLimiter.js';
 import routes from './routes/index.js';
 import docsRoute from './routes/docs.routes.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { handleVerifyEmailLink } from './modules/auth/auth.controller.js';
 
 export const createApp = () => {
   const app = express();
@@ -35,6 +36,8 @@ export const createApp = () => {
   app.get('/health', (req, res) => {
     res.json({ status: 'ok', uptime: process.uptime() });
   });
+
+  app.get('/verify-email', handleVerifyEmailLink);
 
   app.use('/docs', docsRoute);
   app.use('/api', routes);
