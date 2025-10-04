@@ -10,6 +10,8 @@ const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
 
 loadEnv({ path: path.join(rootDir, envFile) });
 
+const defaultLogLevel = process.env.NODE_ENV === 'production' ? 'info' : 'debug';
+
 const requiredVariables = [
   'DATABASE_URL',
   'JWT_SECRET',
@@ -34,6 +36,7 @@ const parseOrigins = (origins) => {
 
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
+  logLevel: process.env.LOG_LEVEL ?? defaultLogLevel,
   port: process.env.PORT ? Number(process.env.PORT) : 7500,
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
