@@ -33,7 +33,10 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
   corsOrigins: parseOrigins(process.env.CORS_ORIGINS),
-  emailFrom: process.env.EMAIL_FROM ?? 'no-reply@rishisjar.com',
+  emailFrom:
+    process.env.EMAIL_FROM ??
+    process.env.EMAIL_SMTP_FROM ??
+    'no-reply@rishisjar.com',
   systemAccessToken: process.env.SYSTEM_ACCESS_TOKEN ?? null,
   resetTokenExpiresMinutes: process.env.RESET_TOKEN_EXPIRES_MINUTES
     ? Number(process.env.RESET_TOKEN_EXPIRES_MINUTES)
@@ -41,4 +44,22 @@ export const env = {
   verificationTokenExpiresMinutes: process.env.VERIFICATION_TOKEN_EXPIRES_MINUTES
     ? Number(process.env.VERIFICATION_TOKEN_EXPIRES_MINUTES)
     : 60 * 24,
+  clientAppUrl: process.env.CLIENT_APP_URL ?? 'http://localhost:5173',
+  smtp: {
+    host: process.env.EMAIL_SMTP_HOST ?? null,
+    port: process.env.EMAIL_SMTP_PORT
+      ? Number(process.env.EMAIL_SMTP_PORT)
+      : null,
+    user: process.env.EMAIL_SMTP_USER ?? null,
+    pass: process.env.EMAIL_SMTP_PASS ?? null,
+    from:
+      process.env.EMAIL_SMTP_FROM ??
+      process.env.EMAIL_FROM ??
+      'no-reply@rishisjar.com',
+    testRecipient: process.env.EMAIL_SMTP_TEST_RECIPIENT ?? null,
+  },
+  notificationSchedules: {
+    dailyCron: process.env.NOTIFICATION_DAILY_CRON ?? null,
+    weeklyCron: process.env.NOTIFICATION_WEEKLY_CRON ?? null,
+  },
 };
