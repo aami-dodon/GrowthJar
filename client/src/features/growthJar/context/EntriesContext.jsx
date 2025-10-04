@@ -10,6 +10,7 @@ import {
   ENTRY_TYPES,
   ENTRY_CATEGORIES,
 } from '../utils/entryUtils'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const EntriesContext = createContext(undefined)
 
@@ -92,7 +93,7 @@ const canonicalRoleMap = new Map([
   ['mother', 'Mom'],
   ['dad', 'Dad'],
   ['father', 'Dad'],
-  ['rishi', 'Rishi'],
+  ['rishi', appCopy.childName],
 ])
 
 const toDisplayName = (value) => {
@@ -137,7 +138,7 @@ const fallbackAuthorByCategory = (category) => {
       return 'Parent'
     case ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER:
     case ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER:
-      return 'Rishi'
+      return appCopy.childName
     default:
       return 'Family'
   }
@@ -219,13 +220,13 @@ const mapEntryToApiPayload = (entry, user) => {
 
   const ensureChildAuthor = () => {
     if (normalizedUserRole !== 'child') {
-      throw new Error('Only Rishi can add this entry.')
+      throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
     if (normalizedFamilyRole !== 'rishi') {
-      throw new Error('Only Rishi can add this entry.')
+      throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
     if (normalizedEntryAuthor && normalizedEntryAuthor !== 'rishi') {
-      throw new Error('Only Rishi can add this entry.')
+      throw new Error(`Only ${appCopy.childName} can add this entry.`)
     }
     return 'rishi'
   }
@@ -316,7 +317,7 @@ export const EntriesProvider = ({ children }) => {
 
   const childAuthorLabel = useMemo(() => {
     if (normalizedUserRole !== 'child') return null
-    if (normalizedFamilyRole === 'rishi') return 'Rishi'
+    if (normalizedFamilyRole === 'rishi') return appCopy.childName
     return null
   }, [normalizedFamilyRole, normalizedUserRole])
 

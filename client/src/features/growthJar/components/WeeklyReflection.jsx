@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_TYPES } from '../utils/entryUtils'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const WeeklyReflection = () => {
   const { stats, triggerCelebration } = useEntriesContext()
@@ -38,7 +39,7 @@ const WeeklyReflection = () => {
               label="Good things"
               value={stats.counts[ENTRY_TYPES.GOOD_THING]}
               tone="sunshine"
-              helper="Moments Rishi shined"
+              helper={`Moments ${appCopy.childName} shined`}
             />
             <StatBadge
               label="Gratitude notes"

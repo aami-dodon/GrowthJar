@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_CATEGORIES, ENTRY_TYPES, formatDateLabel } from '../utils/entryUtils'
 import StatusPill from './StatusPill'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const BetterChoiceSection = () => {
   const {
@@ -40,7 +41,7 @@ const BetterChoiceSection = () => {
       await addEntries({
         category: ENTRY_CATEGORIES.BETTER_CHOICE,
         author: parentAuthorLabel,
-        target: 'Rishi',
+        target: 'rishi',
         text: `It would have been more better if ${moment.trim()}.`,
         context: {
           desired: desiredChoice.trim(),
@@ -48,7 +49,7 @@ const BetterChoiceSection = () => {
       })
       setMoment('')
       setDesiredChoice('')
-      setFeedback('Thanks for guiding the moment with compassion. Invite Rishi to add his next-step plan!')
+      setFeedback(`Thanks for guiding the moment with compassion. Invite ${appCopy.childName} to add their next-step plan!`)
       setTimeout(() => setFeedback(''), 4000)
     } catch (error) {
       setFeedback(error.message ?? 'We could not save this reflection. Please try again soon.')
@@ -61,7 +62,7 @@ const BetterChoiceSection = () => {
     if (!canRespondToBetterChoices) {
       setResponseErrors((prev) => ({
         ...prev,
-        [entryId]: 'Only Rishi can close the loop on better choice reflections.',
+        [entryId]: `Only ${appCopy.childName} can close the loop on better choice reflections.`,
       }))
       return
     }
@@ -94,7 +95,7 @@ const BetterChoiceSection = () => {
 
   const parentFallbackMessage =
     userRole === 'child'
-      ? 'Only Mom or Dad can add new better choice reflections. Rishi, your promises bloom on the right side.'
+      ? `Only Mom or Dad can add new better choice reflections. ${appCopy.childName}, your promises bloom on the right side.`
       : 'Your profile needs a parent role to add better choice reflections.'
 
   return (
@@ -142,7 +143,7 @@ const BetterChoiceSection = () => {
               />
             </label>
             <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
-              <span>Keep it specific and loving. Rishi will add his plan below.</span>
+              <span>Keep it specific and loving. {appCopy.childName} will add their plan below.</span>
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -186,7 +187,7 @@ const BetterChoiceSection = () => {
       <div className="flex flex-col gap-4 rounded-3xl border border-slate-100 bg-sky-50/60 p-5">
         <header className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-display text-2xl text-slate-900">Rishi&rsquo;s gentle promise</h3>
+            <h3 className="font-display text-2xl text-slate-900">{appCopy.childPossessiveName} gentle promise</h3>
             <p className="text-sm text-slate-600">Reply with “Next time, I could...” to close the loop with kindness.</p>
           </div>
           <StatusPill icon="⏳" variant="sky">
@@ -239,7 +240,7 @@ const BetterChoiceSection = () => {
                   </>
                 ) : (
                   <p className="mt-3 rounded-2xl bg-sky-50 px-4 py-3 text-sm font-semibold text-slate-600">
-                    Only Rishi can add the promise that closes this reflection.
+                    Only {appCopy.childName} can add the promise that closes this reflection.
                   </p>
                 )}
               </li>

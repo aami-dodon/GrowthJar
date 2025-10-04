@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_CATEGORIES } from '../utils/entryUtils'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const DailyEntryForms = () => {
   const { addEntries, submissionPermissions } = useEntriesContext()
@@ -37,7 +38,7 @@ const DailyEntryForms = () => {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GOOD_THING,
         author: parentAuthorLabel,
-        target: 'Rishi',
+        target: 'rishi',
         text: parentGoodThing.trim(),
       })
     }
@@ -45,7 +46,7 @@ const DailyEntryForms = () => {
       entries.push({
         category: ENTRY_CATEGORIES.PARENT_GRATITUDE,
         author: parentAuthorLabel,
-        target: 'Rishi',
+        target: 'rishi',
         text: parentGratitude.trim(),
       })
     }
@@ -77,7 +78,7 @@ const DailyEntryForms = () => {
   const handleChildSubmit = async (event) => {
     event.preventDefault()
     if (!canSubmitChildEntries) {
-      setChildAlert({ type: 'error', message: 'Only Rishi can add these gratitude notes.' })
+      setChildAlert({ type: 'error', message: `Only ${appCopy.childName} can add these gratitude notes.` })
       return
     }
     if (isChildSubmitting) return
@@ -85,7 +86,7 @@ const DailyEntryForms = () => {
     if (childGratitudeDad.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER,
-        author: childAuthorLabel ?? 'Rishi',
+        author: childAuthorLabel ?? appCopy.childName,
         target: 'Dad',
         text: childGratitudeDad.trim(),
       })
@@ -93,14 +94,14 @@ const DailyEntryForms = () => {
     if (childGratitudeMom.trim()) {
       entries.push({
         category: ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER,
-        author: childAuthorLabel ?? 'Rishi',
+        author: childAuthorLabel ?? appCopy.childName,
         target: 'Mom',
         text: childGratitudeMom.trim(),
       })
     }
 
     if (!entries.length) {
-      setChildAlert({ type: 'error', message: 'Rishi, share one thing you are grateful for!' })
+      setChildAlert({ type: 'error', message: `${appCopy.childName}, share one thing you are grateful for!` })
       return
     }
 
@@ -125,8 +126,8 @@ const DailyEntryForms = () => {
       <div className="flex flex-col gap-3">
         <h2 className="font-display text-3xl text-slate-900">Daily Gratitude Ritual</h2>
         <p className="max-w-3xl text-slate-600">
-          Parents and Rishi each add one loving slip a day. These simple notes create a shared story of kindness, effort, and
-          appreciation.
+          Parents and {appCopy.childName} each add one loving slip a day. These simple notes create a shared story of kindness,
+          effort, and appreciation.
         </p>
       </div>
       <div className="grid gap-8 lg:grid-cols-2">
@@ -139,7 +140,7 @@ const DailyEntryForms = () => {
               <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sky-600">
                 <span aria-hidden="true">🧑‍🤝‍🧑</span> Parent reflection
               </span>
-              <h3 className="font-display text-2xl text-slate-900">Celebrate Rishi&rsquo;s glow-up moments</h3>
+              <h3 className="font-display text-2xl text-slate-900">Celebrate {appCopy.childPossessiveName} glow-up moments</h3>
             </header>
             <div className="grid gap-4">
               <div className="flex flex-col gap-1 text-sm font-semibold text-slate-600">
@@ -149,17 +150,17 @@ const DailyEntryForms = () => {
                 </span>
               </div>
               <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-                Good thing Rishi did today
+                Good thing {appCopy.childName} did today
                 <textarea
                   value={parentGoodThing}
                   onChange={(event) => setParentGoodThing(event.target.value)}
                   rows={3}
                   className="resize-none rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-base text-slate-700 shadow-inner focus:border-leaf-400 focus:outline-none focus:ring-2 focus:ring-leaf-200"
-                  placeholder="Rishi welcomed a new classmate at school..."
+                  placeholder={`${appCopy.childName} welcomed a new classmate at school...`}
                 />
               </label>
               <label className="flex flex-col gap-2 text-sm font-semibold text-slate-600">
-                Today we&rsquo;re grateful to Rishi for...
+                Today we&rsquo;re grateful to {appCopy.childName} for...
                 <textarea
                   value={parentGratitude}
                   onChange={(event) => setParentGratitude(event.target.value)}
@@ -201,7 +202,7 @@ const DailyEntryForms = () => {
           >
             <header className="flex flex-col gap-2">
               <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-sunshine-600">
-                <span aria-hidden="true">🧒</span> Rishi&rsquo;s gratitude
+                <span aria-hidden="true">🧒</span> {appCopy.childPossessiveName} gratitude
               </span>
               <h3 className="font-display text-2xl text-slate-900">Thank you, Mom and Dad!</h3>
             </header>
@@ -254,7 +255,7 @@ const DailyEntryForms = () => {
 
         {!canSubmitParentEntries && !canSubmitChildEntries && (
           <div className="rounded-3xl border border-slate-100 bg-white/80 px-6 py-8 text-sm font-semibold text-slate-600 shadow-inner">
-            Sign in as Mom, Dad, or Rishi to add new gratitude slips.
+            Sign in as Mom, Dad, or {appCopy.childName} to add new gratitude slips.
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import { childProfile } from '../shared/constants/childProfile.js';
 
 const router = Router();
 
@@ -8,7 +9,7 @@ const options = {
   definition: {
     openapi: '3.0.3',
     info: {
-      title: "Rishi's Jar API",
+      title: `${childProfile.jarName} API`,
       version: '0.1.0',
     },
     components: {

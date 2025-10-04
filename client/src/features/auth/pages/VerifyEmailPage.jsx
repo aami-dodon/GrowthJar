@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { verifyEmail } from '../api/authApi'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams()
@@ -21,7 +22,10 @@ const VerifyEmailPage = () => {
       try {
         await verifyEmail(token)
         if (!isMounted) return
-        setStatus({ state: 'success', message: 'Your email is verified! You can sign in to Rishi\'s Jar now.' })
+        setStatus({
+          state: 'success',
+          message: `Your email is verified! You can sign in to ${appCopy.jarName} now.`,
+        })
       } catch (error) {
         if (!isMounted) return
         setStatus({ state: 'error', message: error.message ?? 'We could not verify that token. Request a new link and try again.' })

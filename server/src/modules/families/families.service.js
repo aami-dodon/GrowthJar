@@ -4,6 +4,7 @@ import { createHttpError } from '../../utils/errors.js';
 import { recordAuditLog } from '../audit/audit.service.js';
 import { sendFamilyInviteEmail } from '../../integrations/email/email.service.js';
 import { env } from '../../config/env.js';
+import { childProfile } from '../../shared/constants/childProfile.js';
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
@@ -91,7 +92,7 @@ export const inviteMember = async ({ email, role, familyId, inviterId }) => {
     },
   });
 
-  await sendFamilyInviteEmail({ email, token, familyName: family.familyName ?? 'Rishi\'s Jar Family' });
+  await sendFamilyInviteEmail({ email, token, familyName: family.familyName ?? `${childProfile.jarName} Family` });
   await recordAuditLog({ userId: inviterId, action: 'FAMILY_MEMBER_INVITED', details: { email, role } });
 
   return token;

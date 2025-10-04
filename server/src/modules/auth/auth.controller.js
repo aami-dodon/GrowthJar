@@ -9,6 +9,7 @@ import {
 import { AppError, createHttpError } from '../../utils/errors.js';
 import { env } from '../../config/env.js';
 import { logger } from '../../config/logger.js';
+import { childProfile } from '../../shared/constants/childProfile.js';
 
 const handleValidation = (req) => {
   const errors = validationResult(req);
@@ -92,7 +93,7 @@ const renderVerificationPage = ({
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Email verification | Rishi's Jar</title>
+      <title>Email verification | ${childProfile.jarName}</title>
       <style>
         * { box-sizing: border-box; }
         body {
@@ -186,7 +187,7 @@ export const handleVerifyEmailLink = async (req, res) => {
       heading: 'Verification link is invalid',
       message: 'The verification link is missing or malformed. Request a new email verification link to continue.',
       actionUrl: clientHomeUrl(),
-      actionLabel: 'Return to Rishi\'s Jar',
+      actionLabel: `Return to ${childProfile.jarName}`,
     });
     return;
   }
@@ -196,7 +197,7 @@ export const handleVerifyEmailLink = async (req, res) => {
     sendVerificationPage(res, 200, {
       variant: 'success',
       heading: 'Email verified',
-      message: 'Your email address has been confirmed. You can sign in to Rishi\'s Jar now.',
+      message: `Your email address has been confirmed. You can sign in to ${childProfile.jarName} now.`,
       actionUrl: clientHomeUrl(),
       actionLabel: 'Go to sign in',
     });
@@ -220,7 +221,7 @@ export const handleVerifyEmailLink = async (req, res) => {
       heading: 'Something went wrong',
       message: 'We could not verify your email because of an unexpected error. Please request a new link and try again.',
       actionUrl: clientHomeUrl(),
-      actionLabel: 'Return to Rishi\'s Jar',
+      actionLabel: `Return to ${childProfile.jarName}`,
     });
   }
 };

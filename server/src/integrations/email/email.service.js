@@ -1,5 +1,6 @@
 import { logger } from '../../config/logger.js';
 import { env } from '../../config/env.js';
+import { childProfile } from '../../shared/constants/childProfile.js';
 import { deliverEmail } from './email.client.js';
 
 const maskEmail = (email) => {
@@ -86,7 +87,7 @@ const renderTemplate = ({
                   <div style="margin-top:32px;">
                     ${footerHtml}
                   </div>
-                  <p style="margin:24px 0 0;font-size:12px;line-height:18px;color:#9ca3af;">This message was sent by Rishi's Jar • A gratitude ritual for families.</p>
+                  <p style="margin:24px 0 0;font-size:12px;line-height:18px;color:#9ca3af;">This message was sent by ${childProfile.jarName} • A gratitude ritual for families.</p>
                 </td>
               </tr>
             </table>
@@ -109,24 +110,24 @@ export const sendEmailVerification = async ({ email, token }) => {
   const verificationUrl = buildUrl('/verify-email', token);
   logger.info({ message: 'Queued email verification', to: maskEmail(email) });
   const html = renderTemplate({
-    title: 'Confirm your email to unlock Rishi\'s Jar',
-    previewText: 'Finish setting up your Rishi\'s Jar account.',
+    title: `Confirm your email to unlock ${childProfile.jarName}`,
+    previewText: `Finish setting up your ${childProfile.jarName} account.`,
     introLines: [
-      'Welcome to the Rishi family ritual!',
+      `Welcome to the ${childProfile.name} family ritual!`,
       'Tap the button below within the next day to confirm your email address and start capturing gratitude together.',
     ],
     action: { label: 'Verify email', url: verificationUrl },
     footerLines: ['If you did not request this, you can safely ignore this email.'],
   });
   const text = renderText([
-    'Welcome to the Rishi family ritual! Verify your email to unlock Rishi\'s Jar.',
+    `Welcome to the ${childProfile.name} family ritual! Verify your email to unlock ${childProfile.jarName}.`,
     verificationUrl,
     'If you did not request this, you can ignore this email.',
   ]);
   await deliverEmail({
     from: env.emailFrom,
     to: email,
-    subject: 'Verify your email for Rishi\'s Jar',
+    subject: `Verify your email for ${childProfile.jarName}`,
     text,
     html,
   });
@@ -142,24 +143,24 @@ export const sendPasswordResetEmail = async ({ email, token }) => {
   const resetUrl = buildUrl('/reset-password', token);
   logger.info({ message: 'Queued password reset email', to: maskEmail(email) });
   const html = renderTemplate({
-    title: 'Reset your Rishi\'s Jar password',
+    title: `Reset your ${childProfile.jarName} password`,
     previewText: 'Use the secure link below to choose a new password.',
     introLines: [
-      'Someone (hopefully you!) asked to reset the password for this Rishi\'s Jar account.',
+      `Someone (hopefully you!) asked to reset the password for this ${childProfile.jarName} account.`,
       'Set a fresh password within the next hour by using the button below.',
     ],
     action: { label: 'Create a new password', url: resetUrl },
     footerLines: ['If you did not request a reset, you can ignore this email—your password will stay the same.'],
   });
   const text = renderText([
-    'Use the following link to reset your Rishi\'s Jar password:',
+    `Use the following link to reset your ${childProfile.jarName} password:`,
     resetUrl,
     'If you did not request this change, you can ignore this email.',
   ]);
   await deliverEmail({
     from: env.emailFrom,
     to: email,
-    subject: "Reset your password for Rishi's Jar",
+    subject: `Reset your password for ${childProfile.jarName}`,
     text,
     html,
   });
@@ -175,23 +176,23 @@ export const sendFamilyInviteEmail = async ({ email, token, familyName }) => {
   const inviteUrl = buildUrl('/accept-invite', token);
   logger.info({ message: 'Queued family invitation email', to: maskEmail(email) });
   const html = renderTemplate({
-    title: `Join ${familyName} on Rishi's Jar`,
+    title: `Join ${familyName} on ${childProfile.jarName}`,
     previewText: `Accept your invitation to ${familyName}.`,
     introLines: [
-      `${familyName} would love for you to join their gratitude circle on Rishi's Jar.`,
+      `${familyName} would love for you to join their gratitude circle on ${childProfile.jarName}.`,
       'Click the button below to accept and start sharing celebrations together.',
     ],
     action: { label: 'Accept invitation', url: inviteUrl },
     footerLines: ['This link will expire soon for security, so be sure to use it promptly.'],
   });
   const text = renderText([
-    `${familyName} invited you to join Rishi's Jar. Accept the invitation using the link below:`,
+    `${familyName} invited you to join ${childProfile.jarName}. Accept the invitation using the link below:`,
     inviteUrl,
   ]);
   await deliverEmail({
     from: env.emailFrom,
     to: email,
-    subject: `You have been invited to ${familyName} on Rishi's Jar`,
+    subject: `You have been invited to ${familyName} on ${childProfile.jarName}`,
     text,
     html,
   });

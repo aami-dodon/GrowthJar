@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 export const ENTRY_TYPES = {
   GOOD_THING: 'good-thing',
@@ -18,7 +19,7 @@ export const entryMetadata = {
   [ENTRY_CATEGORIES.PARENT_GOOD_THING]: {
     type: ENTRY_TYPES.GOOD_THING,
     label: 'Good Thing',
-    description: 'Celebrating something wonderful Rishi did today.',
+    description: `Celebrating something wonderful ${appCopy.childName} did today.`,
     accent: 'from-sunshine-200 via-sunshine-300 to-sunshine-200',
     border: 'border-sunshine-400/70',
     text: 'text-slate-800',
@@ -26,8 +27,8 @@ export const entryMetadata = {
   },
   [ENTRY_CATEGORIES.PARENT_GRATITUDE]: {
     type: ENTRY_TYPES.GRATITUDE,
-    label: 'Gratitude for Rishi',
-    description: 'A thankful note from a parent to Rishi.',
+    label: `Gratitude for ${appCopy.childName}`,
+    description: `A thankful note from a parent to ${appCopy.childName}.`,
     accent: 'from-leaf-200 via-leaf-300 to-leaf-200',
     border: 'border-leaf-400/70',
     text: 'text-slate-800',
@@ -35,8 +36,8 @@ export const entryMetadata = {
   },
   [ENTRY_CATEGORIES.CHILD_GRATITUDE_FATHER]: {
     type: ENTRY_TYPES.GRATITUDE,
-    label: 'Rishi → Dad',
-    description: 'Rishi shares gratitude for Dad.',
+    label: `${appCopy.childName} → Dad`,
+    description: `${appCopy.childName} shares gratitude for Dad.`,
     accent: 'from-sky-200 via-sky-300 to-sky-200',
     border: 'border-sky-400/70',
     text: 'text-slate-800',
@@ -44,8 +45,8 @@ export const entryMetadata = {
   },
   [ENTRY_CATEGORIES.CHILD_GRATITUDE_MOTHER]: {
     type: ENTRY_TYPES.GRATITUDE,
-    label: 'Rishi → Mom',
-    description: 'Rishi shares gratitude for Mom.',
+    label: `${appCopy.childName} → Mom`,
+    description: `${appCopy.childName} shares gratitude for Mom.`,
     accent: 'from-lavender-200 via-lavender-300 to-lavender-200',
     border: 'border-lavender-400/70',
     text: 'text-slate-800',
