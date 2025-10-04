@@ -2,21 +2,31 @@
 
 Growth Jar is a family-focused gratitude and personal development tracker built on a PERN stack. The platform helps family members capture daily reflections, celebrate collective wins, and visualize long-term growth through a secure, role-aware experience.
 
+# Screenshots
+
+![Landing Page](screenshots/growth-jar-landing.png)
+![Home Page](screenshots/growth-jar-authenticated.png)
+
 ## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-  - [Environment Variables](#environment-variables)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-  - [Docker](#docker)
-- [Testing](#testing)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+- [Growth Jar](#growth-jar)
+- [Screenshots](#screenshots)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Tech Stack](#tech-stack)
+  - [Project Structure](#project-structure)
+  - [Prerequisites](#prerequisites)
+  - [Setup](#setup)
+    - [Environment Variables](#environment-variables)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+    - [Docker](#docker)
+  - [Running with Docker Compose (Step-by-Step)](#running-with-docker-compose-step-by-step)
+  - [Screenshots](#screenshots-1)
+  - [Testing](#testing)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Overview
 Growth Jar separates the frontend and backend into dedicated workspaces. The React client delivers the Growth Jar experience while the Express API powers authentication, journaling workflows, and persistence. Authentication is role-based and supports predefined family members (mom, dad, and child) who must verify their email before gaining access.
