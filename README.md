@@ -81,7 +81,7 @@ Clone the repository and install dependencies in both workspaces.
 
 ```bash
 git clone <repo-url>
-cd RishisJar
+cd GrowthJar
 ```
 
 ### Environment Variables
@@ -140,14 +140,14 @@ se.
    - Run the commands below to copy the project:
      ```bash
      git clone <repo-url>
-     cd RishisJar
+     cd GrowthJar
      ```
 3. **Install Docker Desktop.**
    - Download Docker Desktop for your operating system from [https://www.docker.com/products/docker-desktop](https://www.docker
 .com/products/docker-desktop).
    - Open Docker Desktop after installation and wait until it shows that Docker is running.
 4. **Create the environment file.**
-   - Still inside the `RishisJar` folder, copy the sample environment file into a real one:
+   - Still inside the `GrowthJar` folder, copy the sample environment file into a real one:
      ```bash
      cp .env.example .env
      ```
