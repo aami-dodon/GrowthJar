@@ -217,4 +217,4 @@ Additional tooling such as `npm run lint` and `npm run test:watch` can be execut
 - Submit pull requests with a summary, rationale, and screenshots for UI updates. One approval is required before merging.
 
 ## License
-This project is currently unlicensed. All rights reserved.
+Growth Jar is licensed under the [MIT License](./LICENSE).
