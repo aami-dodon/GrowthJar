@@ -20,6 +20,6 @@ RUN npx prisma generate
 
 COPY src ./src
 
-EXPOSE 4000
+EXPOSE 7500
 
 CMD ["sh", "-c", "npm run prisma:migrate && node src/server.js"]
