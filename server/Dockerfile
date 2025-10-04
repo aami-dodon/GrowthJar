@@ -17,10 +17,9 @@ RUN npm ci
 
 COPY prisma ./prisma
 RUN npx prisma generate
-RUN npm prune --omit=dev
 
 COPY src ./src
 
 EXPOSE 4000
 
-CMD ["node", "src/server.js"]
+CMD ["sh", "-c", "npm run prisma:migrate && node src/server.js"]

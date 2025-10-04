@@ -9,9 +9,9 @@ Family gratitude and growth tracker with a PERN stack. The frontend (Vite + Reac
    npm install
    ```
 2. Copy `.env.example` to `.env` and populate database + secrets.
-3. Apply migrations (after configuring Prisma):
+3. Apply migrations (after configuring Prisma) from the `/server` directory:
    ```bash
-   npx prisma migrate deploy
+   npm run prisma:migrate
    ```
 4. Start the API:
    ```bash
@@ -25,6 +25,7 @@ Family gratitude and growth tracker with a PERN stack. The frontend (Vite + Reac
    ```bash
    docker compose up --build
    ```
+   The server container automatically runs `prisma migrate deploy` during startup, so your configured Postgres database receives the latest schema before the API begins accepting traffic.
 3. The API will be available on `http://localhost:4000` and the frontend will be served on `http://localhost:5173` (port mappings can be adjusted via the environment variables in `.env.example`).
 
 ## Testing
