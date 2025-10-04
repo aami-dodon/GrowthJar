@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import StatusPill from './StatusPill'
 
 const initialSettings = {
   dailyReminder: true,
@@ -24,7 +25,9 @@ const NotificationPanel = () => {
             Keep the habit fresh with encouraging nudges. Emails are positive, short, and personalized for your family.
           </p>
         </div>
-        <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-600">Email verified ✅</span>
+        <StatusPill icon="✅" variant="sky">
+          Email verified
+        </StatusPill>
       </header>
       <ul className="space-y-3 text-sm text-slate-600">
         <li className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white/70 px-4 py-3">

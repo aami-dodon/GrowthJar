@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { exportEntriesToCsv, exportEntriesToPdf } from '../utils/exportUtils'
 import { formatDateLabel } from '../utils/entryUtils'
+import StatusPill from './StatusPill'
 
 const ExportPanel = () => {
   const { entries } = useEntriesContext()
@@ -15,7 +16,9 @@ const ExportPanel = () => {
           <h3 className="font-display text-2xl text-slate-900">Share the joy</h3>
           <p className="text-sm text-slate-600">Export your jar to print, scrapbook, or email to loved ones.</p>
         </div>
-        <span className="rounded-full bg-sunshine-100 px-3 py-1 text-xs font-semibold text-sunshine-600">Keepsake ready</span>
+        <StatusPill icon="🎁" variant="sunshine">
+          Keepsake ready
+        </StatusPill>
       </header>
       <div className="rounded-3xl border border-slate-100 bg-gradient-to-br from-white via-sunshine-50/70 to-white px-5 py-4 text-sm text-slate-600 shadow-inner">
         <p className="font-semibold text-slate-800">Latest slip</p>

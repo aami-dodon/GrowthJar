@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_CATEGORIES, ENTRY_TYPES, formatDateLabel } from '../utils/entryUtils'
+import StatusPill from './StatusPill'
 
 const ParentChoices = ['Mom', 'Dad']
 
@@ -58,8 +59,10 @@ const BetterChoiceSection = () => {
               gentle and loving.
             </p>
           </div>
-          <span className="hidden rounded-full bg-lavender-100 px-4 py-2 text-sm font-semibold text-lavender-600 lg:inline-flex">
-            🪄 Reflect & Reset
+          <span className="hidden lg:inline-flex">
+            <StatusPill icon="🪄" variant="lavender">
+              Reflect & Reset
+            </StatusPill>
           </span>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,7 +144,9 @@ const BetterChoiceSection = () => {
             <h3 className="font-display text-2xl text-slate-900">Rishi's gentle promise</h3>
             <p className="text-sm text-slate-600">Reply with “Next time, I could...” to close the loop with kindness.</p>
           </div>
-          <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-600">{pendingBetterChoices.length} awaiting</span>
+          <StatusPill icon="⏳" variant="sky">
+            {pendingBetterChoices.length} awaiting
+          </StatusPill>
         </header>
         {pendingBetterChoices.length === 0 ? (
           <div className="flex flex-col items-center gap-3 rounded-3xl bg-white/80 px-6 py-10 text-center text-slate-500">
