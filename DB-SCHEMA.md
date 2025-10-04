@@ -6,6 +6,7 @@ The relational schema is managed through Prisma. Core tables:
 - **Families** — container for grouping users; parents create and manage.
 - **JarEntries** — gratitude, good things, and better choices along with metadata.
 - **Notifications** — audit trail of daily/weekly reminders.
+- **NotificationPreferences** — per-family reminder toggles and preferred reflection schedule.
 - **AuditLogs** — immutable log of important actions.
 - **EmailVerificationTokens** — hashed tokens for email verification flow.
 - **PasswordResetTokens** — hashed tokens for password reset.

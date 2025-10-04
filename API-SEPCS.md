@@ -27,6 +27,10 @@
 - `POST /api/notifications/send` — Parent-triggered reminder event.
 - `GET /api/notifications` — History of notifications per family.
 
+## Notification Preferences
+- `GET /api/notification-preferences` — Fetch the current family notification settings with defaults applied.
+- `PUT /api/notification-preferences` — Update the family notification preferences (entry alerts, reminders, reflection time).
+
 ## Exports
 - `GET /api/exports/csv` — Download entries as CSV.
 - `GET /api/exports/pdf` — Download entries as PDF.

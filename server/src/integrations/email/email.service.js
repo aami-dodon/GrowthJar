@@ -22,6 +22,21 @@ const buildUrl = (pathname, token) => {
   }
 };
 
+const buildClientUrl = (pathname) => {
+  try {
+    const url = new URL(env.clientAppUrl);
+    url.pathname = pathname;
+    return url.toString();
+  } catch (error) {
+    logger.warn({
+      message: 'Unable to build URL from clientAppUrl',
+      clientAppUrl: env.clientAppUrl,
+      error,
+    });
+    return `${env.clientAppUrl.replace(/\/$/, '')}${pathname}`;
+  }
+};
+
 const renderTemplate = ({
   title,
   previewText,
@@ -99,6 +114,19 @@ const renderTemplate = ({
 };
 
 const renderText = (lines) => lines.filter(Boolean).join('\n\n');
+
+const escapeHtml = (value) => {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
 
 /**
  * Sends an email verification link to a user.
@@ -193,6 +221,72 @@ export const sendFamilyInviteEmail = async ({ email, token, familyName }) => {
     from: env.emailFrom,
     to: email,
     subject: `You have been invited to ${familyName} on ${childProfile.jarName}`,
+    text,
+    html,
+  });
+};
+
+const entryTypeCopy = {
+  good_thing: { label: 'Good Thing', emoji: '🌟' },
+  gratitude: { label: 'Gratitude', emoji: '💌' },
+  better_choice: { label: 'Better Choice Reflection', emoji: '🧠' },
+};
+
+/**
+ * Sends an email letting a family member know that a new jar entry was created.
+ *
+ * @param {{
+ *   to: string,
+ *   entryType: 'good_thing' | 'gratitude' | 'better_choice',
+ *   content: string,
+ *   authorName: string,
+ *   recipientName?: string,
+ * }} params
+ * @returns {Promise<void>}
+ */
+export const sendEntryNotificationEmail = async ({
+  to,
+  entryType,
+  content,
+  authorName,
+  recipientName,
+}) => {
+  const copy = entryTypeCopy[entryType] ?? { label: 'Jar Entry', emoji: '📝' };
+  const friendlyType = copy.label.toLowerCase();
+  const previewText = `${authorName} added a new ${friendlyType} to ${childProfile.jarName}`;
+  const safeContent = escapeHtml(content ?? '').replace(/\n/g, '<br/>');
+  const quotedContent = safeContent
+    ? `&ldquo;${safeContent}&rdquo;`
+    : `${authorName} shared a new moment in the jar.`;
+  const personalGreeting = recipientName ? `Hi ${escapeHtml(recipientName)},` : 'Hi there,';
+  const html = renderTemplate({
+    title: `${copy.emoji} ${authorName} shared a ${copy.label}`,
+    previewText,
+    introLines: [
+      personalGreeting,
+      `${authorName} just added a new ${friendlyType} to ${childProfile.jarName}.`,
+      `Here’s what they wrote: ${quotedContent}`,
+      'Open the jar to celebrate together or add your own note when inspiration strikes.',
+    ],
+    action: { label: 'Open the growth jar', url: buildClientUrl('/') },
+    footerLines: [
+      'You received this because entry notifications are enabled for your family.',
+      'Want to adjust these emails? Update your notification preferences in the app.',
+    ],
+  });
+
+  const text = renderText([
+    personalGreeting,
+    `${authorName} just added a new ${friendlyType} to ${childProfile.jarName}.`,
+    content ? `Here is what they shared:\n"${content}"` : `${authorName} shared a new moment in the jar.`,
+    'Open the jar to celebrate together or add your own note when you are ready.',
+    buildClientUrl('/'),
+  ]);
+
+  await deliverEmail({
+    from: env.emailFrom,
+    to,
+    subject: `${copy.emoji} ${authorName} added a ${friendlyType} to ${childProfile.jarName}`,
     text,
     html,
   });

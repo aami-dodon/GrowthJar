@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Notification preference API and Prisma model so families can store reminder toggles and preferred reflection time.
+- Growth jar notification panel persistence that loads and saves settings while showing delivery status updates.
+
 # [0.2.1] - 2024-06-08
 ### Changed
 - Locked daily gratitude and better choice submissions to the signed-in family member on both the UI and API so moms, dads, and the configured child can only add their own slips.
