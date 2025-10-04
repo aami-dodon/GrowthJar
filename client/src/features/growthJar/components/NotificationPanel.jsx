@@ -80,13 +80,25 @@ const ToggleSwitch = ({ checked, onChange }) => (
   <button
     type="button"
     onClick={onChange}
-    className={`relative h-7 w-12 rounded-full border transition ${checked ? 'border-leaf-400 bg-leaf-400/90' : 'border-slate-200 bg-slate-200'}`}
+    className="group relative inline-flex h-7 w-12 items-center justify-start rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-leaf-200 focus-visible:ring-offset-2"
     role="switch"
     aria-checked={checked}
   >
     <span
-      className={`absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-white shadow transition ${checked ? 'translate-x-6' : 'translate-x-1'}`}
+      aria-hidden="true"
+      className={`absolute inset-0 rounded-full border transition-all duration-200 ${
+        checked
+          ? 'border-leaf-400 bg-leaf-400/90 shadow-[inset_0_0_0_1px_rgba(14,116,144,0.25)]'
+          : 'border-slate-200 bg-slate-200/80 shadow-[inset_0_1px_3px_rgba(15,23,42,0.08)]'
+      }`}
     />
+    <span
+      aria-hidden="true"
+      className={`relative ml-1 inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-200 ease-out ${
+        checked ? 'translate-x-5' : 'translate-x-0'
+      }`}
+    />
+    <span className="sr-only">Toggle setting</span>
   </button>
 )
 
