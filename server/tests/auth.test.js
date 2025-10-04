@@ -31,7 +31,15 @@ const app = createApp();
 
 describe('Auth routes', () => {
   beforeEach(() => {
-    prismaMock.user.findUnique.mockResolvedValue(null);
+    prismaMock.user.findUnique.mockImplementation(async ({ where }) => {
+      if (where?.email) {
+        return null;
+      }
+      if (where?.familyRole) {
+        return null;
+      }
+      return null;
+    });
     prismaMock.user.create.mockImplementation(async ({ data }) => ({
       ...data,
       id: 'user-1',
@@ -47,14 +55,16 @@ describe('Auth routes', () => {
 
   it('creates a user on signup', async () => {
     const response = await request(app).post('/api/auth/signup').send({
-      email: 'parent@example.com',
+      email: process.env.AUTH_MOM_EMAIL,
       password: 'Password123',
       role: 'parent',
+      familyRole: 'mom',
       firstName: 'Parent',
     });
 
     expect(response.status).toBe(201);
     expect(response.body.status).toBe('success');
-    expect(response.body.data.email).toBe('parent@example.com');
+    expect(response.body.data.email).toBe(process.env.AUTH_MOM_EMAIL);
+    expect(response.body.data.familyRole).toBe('mom');
   });
 });

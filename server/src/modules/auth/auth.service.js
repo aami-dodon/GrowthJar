@@ -6,6 +6,7 @@ import { signToken } from '../../utils/jwt.js';
 import { recordAuditLog } from '../audit/audit.service.js';
 import { sendEmailVerification, sendPasswordResetEmail } from '../../integrations/email/email.service.js';
 import { env } from '../../config/env.js';
+import { FAMILY_ROLES, FAMILY_ROLE_TO_USER_ROLE } from '../../shared/constants/familyRoles.js';
 
 const SALT_ROUNDS = 12;
 
@@ -39,10 +40,41 @@ const createResetToken = async (userId) => {
   return token;
 };
 
-export const signup = async ({ email, password, role, firstName, lastName, familyId }) => {
+const normalizeEmail = (value) => value?.trim().toLowerCase();
+
+const assertAllowedSignup = (email, familyRole, role) => {
+  const normalizedRole = typeof familyRole === 'string' ? familyRole.trim().toLowerCase() : null;
+  if (!normalizedRole || !Object.values(FAMILY_ROLES).includes(normalizedRole)) {
+    throw createHttpError(400, 'Unsupported family role');
+  }
+
+  const expectedRole = FAMILY_ROLE_TO_USER_ROLE[normalizedRole];
+  if (expectedRole !== role) {
+    throw createHttpError(400, 'Role is not permitted for the selected family member');
+  }
+
+  const allowedEmail = env.allowedFamilyEmails[normalizedRole];
+  if (!allowedEmail) {
+    throw createHttpError(500, 'Family role is not configured for signups');
+  }
+
+  if (normalizeEmail(email) !== normalizeEmail(allowedEmail)) {
+    throw createHttpError(403, 'This email is not authorized for the selected family member');
+  }
+};
+
+export const signup = async ({ email, password, role, familyRole, firstName, lastName, familyId }) => {
+  const normalizedRole = typeof familyRole === 'string' ? familyRole.trim().toLowerCase() : familyRole;
+  assertAllowedSignup(email, normalizedRole, role);
+
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     throw createHttpError(409, 'Account already exists');
+  }
+
+  const existingRole = await prisma.user.findUnique({ where: { familyRole: normalizedRole } });
+  if (existingRole) {
+    throw createHttpError(409, 'This family member has already been registered');
   }
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -51,6 +83,7 @@ export const signup = async ({ email, password, role, firstName, lastName, famil
     data: {
       email,
       role,
+      familyRole: normalizedRole,
       firstName,
       lastName,
       passwordHash: hashedPassword,
@@ -60,7 +93,11 @@ export const signup = async ({ email, password, role, firstName, lastName, famil
 
   const verificationToken = await createVerificationToken(user.id);
   await sendEmailVerification({ email: user.email, token: verificationToken });
-  await recordAuditLog({ userId: user.id, action: 'USER_SIGNED_UP', details: { role } });
+  await recordAuditLog({
+    userId: user.id,
+    action: 'USER_SIGNED_UP',
+    details: { role, familyRole },
+  });
 
   return user;
 };

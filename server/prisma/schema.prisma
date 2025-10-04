@@ -12,6 +12,12 @@ enum Role {
   child
 }
 
+enum FamilyRole {
+  mom
+  dad
+  rishi
+}
+
 enum EntryType {
   good_thing
   gratitude
@@ -24,9 +30,10 @@ enum NotificationType {
 }
 
 model User {
-  id             String    @id @default(uuid())
+  id             String      @id @default(uuid())
   familyId       String?
   role           Role
+  familyRole     FamilyRole? @unique
   firstName      String
   lastName       String?
   email          String    @unique

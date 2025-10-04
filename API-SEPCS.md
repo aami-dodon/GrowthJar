@@ -1,7 +1,7 @@
 # API Specifications
 
 ## Auth
-- `POST /api/auth/signup` — Register parent or child user, triggers email verification.
+- `POST /api/auth/signup` — Register the mom, dad, or Rishi account (requires matching `familyRole` and configured email), triggers email verification.
 - `POST /api/auth/login` — Exchange credentials for JWT after email verification.
 - `POST /api/auth/verify-email` — Validate verification token.
 - `POST /api/auth/request-password-reset` — Issue password reset token.
