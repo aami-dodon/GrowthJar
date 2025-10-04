@@ -5,6 +5,7 @@ import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage'
 import GrowthJarExperience from '../features/growthJar/GrowthJarExperience'
 import { EntriesProvider } from '../features/growthJar/context/EntriesContext'
 import { AuthProvider, useAuth } from '../features/auth/context/AuthContext'
+import { appCopy } from '../shared/constants/appCopy'
 
 const formatFamilyRole = (familyRole) => {
   switch (familyRole) {
@@ -13,7 +14,7 @@ const formatFamilyRole = (familyRole) => {
     case 'dad':
       return 'Dad'
     case 'rishi':
-      return 'Rishi'
+      return appCopy.childName
     default:
       return 'Family member'
   }
@@ -40,7 +41,7 @@ const AuthenticatedApp = () => {
         <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 backdrop-blur">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500">Rishi&apos;s Jar</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500">{appCopy.jarName}</p>
               <h1 className="mt-2 text-2xl font-semibold text-slate-900">
                 Welcome back, {user?.firstName ?? 'family'}!
               </h1>

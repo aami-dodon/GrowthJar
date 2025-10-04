@@ -1,6 +1,7 @@
 import PDFDocument from 'pdfkit';
 import { prisma } from '../../config/prisma.js';
 import { createHttpError } from '../../utils/errors.js';
+import { childProfile } from '../../shared/constants/childProfile.js';
 
 const periodToRange = (period) => {
   switch (period) {
@@ -54,7 +55,7 @@ const createPdf = (entries) =>
     doc.on('data', (chunk) => buffers.push(chunk));
     doc.on('end', () => resolve(Buffer.concat(buffers)));
 
-    doc.fontSize(20).text("Rishi's Jar Export", { underline: true });
+    doc.fontSize(20).text(`${childProfile.jarName} Export`, { underline: true });
     doc.moveDown();
 
     entries.forEach((entry) => {

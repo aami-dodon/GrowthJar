@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import useWindowSize from '../hooks/useWindowSize'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_TYPES } from '../utils/entryUtils'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const CelebrationOverlay = () => {
   const { showCelebration, dismissCelebration, stats } = useEntriesContext()
@@ -24,8 +25,9 @@ const CelebrationOverlay = () => {
       <div className="pointer-events-auto rounded-3xl bg-white/90 px-6 py-4 text-center shadow-2xl">
         <p className="font-display text-2xl text-leaf-600">Weekly Reflection Unlocked!</p>
         <p className="mt-1 text-sm text-slate-600">
-          Rishi received {stats.counts[ENTRY_TYPES.GOOD_THING]} celebrations and {stats.counts[ENTRY_TYPES.GRATITUDE]} gratitude
-          notes this week. 🥳
+          {appCopy.childName} received {stats.counts[ENTRY_TYPES.GOOD_THING]} celebrations and
+          {' '}
+          {stats.counts[ENTRY_TYPES.GRATITUDE]} gratitude notes this week. 🥳
         </p>
       </div>
     </div>

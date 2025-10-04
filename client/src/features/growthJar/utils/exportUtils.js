@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf'
 import { formatDateLabel } from './entryUtils'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const sanitize = (value) => {
   if (value === null || value === undefined) return ''
@@ -24,7 +25,7 @@ export const exportEntriesToCsv = (entries) => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.setAttribute('download', 'rishis-growth-jar.csv')
+  link.setAttribute('download', `${appCopy.jarSlug}.csv`)
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
@@ -38,7 +39,7 @@ export const exportEntriesToPdf = (entries) => {
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(20)
-  doc.text("Rishi's Growth Jar — Weekly Keepsake", marginX, cursorY)
+  doc.text(`${appCopy.childPossessiveName} Growth Jar — Weekly Keepsake`, marginX, cursorY)
 
   cursorY += 24
   doc.setFont('helvetica', 'normal')
@@ -88,5 +89,5 @@ export const exportEntriesToPdf = (entries) => {
     cursorY += index === entries.length - 1 ? 0 : 12
   })
 
-  doc.save('rishis-growth-jar.pdf')
+  doc.save(`${appCopy.jarSlug}.pdf`)
 }

@@ -2,6 +2,7 @@ import { prisma } from '../../config/prisma.js';
 import { createHttpError } from '../../utils/errors.js';
 import { recordAuditLog } from '../audit/audit.service.js';
 import { FAMILY_ROLES } from '../../shared/constants/familyRoles.js';
+import { childProfile } from '../../shared/constants/childProfile.js';
 
 const ENTRY_TYPES = ['good_thing', 'gratitude', 'better_choice'];
 
@@ -64,7 +65,7 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
 
     if (['good_thing', 'gratitude', 'better_choice'].includes(entryType)) {
       if (sanitizedMetadata.target && sanitizedMetadata.target !== 'rishi') {
-        throw createHttpError(403, 'Parents can only target Rishi with these entries');
+        throw createHttpError(403, `Parents can only target ${childProfile.name} with these entries`);
       }
       sanitizedMetadata.target = 'rishi';
     }
@@ -77,7 +78,7 @@ export const createJarEntry = async ({ userId, entryType, content, metadata = {}
 
   if (user.role === 'child') {
     if (familyRole !== FAMILY_ROLES.RISHI) {
-      throw createHttpError(403, 'Only Rishi can submit child entries');
+      throw createHttpError(403, `Only ${childProfile.name} can submit child entries`);
     }
 
     if (sanitizedMetadata.author && sanitizedMetadata.author !== FAMILY_ROLES.RISHI) {
@@ -202,7 +203,7 @@ export const respondToBetterChoice = async ({ entryId, userId, content }) => {
     throw createHttpError(403, 'Only children can respond to better choices');
   }
   if (canonicalizeFamilyRole(user.familyRole) !== FAMILY_ROLES.RISHI) {
-    throw createHttpError(403, 'Only Rishi can respond to better choices');
+      throw createHttpError(403, `Only ${childProfile.name} can respond to better choices`);
   }
 
   const response = await prisma.jarEntry.create({

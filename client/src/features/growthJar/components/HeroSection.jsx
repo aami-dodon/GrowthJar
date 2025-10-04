@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useEntriesContext } from '../context/EntriesContext'
 import { ENTRY_TYPES } from '../utils/entryUtils'
 import GrowthJarVisual from './GrowthJarVisual'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const HeroSection = () => {
   const { entries, stats, lastAddedId } = useEntriesContext()
@@ -19,11 +20,11 @@ const HeroSection = () => {
             <span className="text-base">✨</span> One jar. Endless family moments.
           </span>
           <h1 className="font-display text-4xl leading-tight text-slate-900 sm:text-5xl">
-            Rishi&rsquo;s <span className="text-sky-600">Growth Jar</span>
+            {appCopy.childPossessiveName} <span className="text-sky-600">Growth Jar</span>
           </h1>
           <p className="text-lg text-slate-600 sm:text-xl">
-            A shared space where Rishi and parents celebrate wins, practice gratitude, and learn from better choices. Build a
-            heartwarming ritual that grows kinder every day.
+            A shared space where {appCopy.childName} and parents celebrate wins, practice gratitude, and learn from better choices.
+            Build a heartwarming ritual that grows kinder every day.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-left lg:justify-start">
             <a

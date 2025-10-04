@@ -38,6 +38,7 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
+  childName: process.env.CHILDS_NAME?.trim() || 'Rishi',
   corsOrigins: parseOrigins(process.env.CORS_ORIGINS),
   emailFrom:
     process.env.EMAIL_FROM ??

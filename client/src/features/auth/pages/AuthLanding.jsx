@@ -2,6 +2,7 @@ import { useState } from 'react'
 import LoginForm from '../components/LoginForm'
 import SignupForm from '../components/SignupForm'
 import ForgotPasswordForm from '../components/ForgotPasswordForm'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const AuthLanding = () => {
   const [view, setView] = useState('login')
@@ -20,9 +21,9 @@ const AuthLanding = () => {
             RJ
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Rishi&apos;s Jar</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">{appCopy.jarName}</p>
             <h1 className="mt-3 text-4xl font-semibold text-slate-900 sm:text-5xl">
-              A joyful family ritual secured just for mom, dad, and Rishi
+              A joyful family ritual secured just for mom, dad, and {appCopy.childName}
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-slate-600">
               Sign in to access the gratitude jar or create the trio of accounts our family needs. Every login is protected with
@@ -40,7 +41,7 @@ const AuthLanding = () => {
                   <span className="mt-1 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full bg-sky-500/10 text-sky-500">1</span>
                   <div>
                     <p className="font-semibold text-slate-800">Only three verified voices</p>
-                    <p className="text-sm">Mom, Dad, and Rishi each get one seat in the jar—keeps things personal and safe.</p>
+                    <p className="text-sm">Mom, Dad, and {appCopy.childName} each get one seat in the jar—keeps things personal and safe.</p>
                   </div>
                 </li>
                 <li className="flex gap-3">

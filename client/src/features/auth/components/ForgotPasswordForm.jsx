@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { requestPasswordReset } from '../api/authApi'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const ForgotPasswordForm = ({ onClose }) => {
   const [email, setEmail] = useState('')
@@ -36,7 +37,7 @@ const ForgotPasswordForm = ({ onClose }) => {
         </button>
         <h2 className="text-xl font-semibold text-slate-900">Reset password</h2>
         <p className="mt-1 text-sm text-slate-600">
-          We&apos;ll email you a secure link to choose a new password for Rishi&apos;s Jar.
+          We&apos;ll email you a secure link to choose a new password for {appCopy.jarName}.
         </p>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div className="space-y-2">

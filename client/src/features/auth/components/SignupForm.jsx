@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { signup as signupRequest } from '../api/authApi'
+import { appCopy } from '../../../shared/constants/appCopy'
 
 const FAMILY_ROLES = [
   {
@@ -16,8 +17,8 @@ const FAMILY_ROLES = [
   },
   {
     value: 'rishi',
-    label: 'Rishi',
-    description: 'Our superstar kid storyteller.',
+    label: appCopy.childName,
+    description: `${appCopy.childName} keeps the storytelling playful.`,
     accent: 'bg-leaf-100 text-leaf-600',
   },
 ]
@@ -33,7 +34,10 @@ const defaultForm = {
 
 const SignupForm = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState(defaultForm)
-  const [status, setStatus] = useState({ type: 'info', message: 'Only three accounts can be created—one mom, one dad, and one Rishi.' })
+  const [status, setStatus] = useState({
+    type: 'info',
+    message: `Only three accounts can be created—one mom, one dad, and one ${appCopy.childName}.`,
+  })
   const [loading, setLoading] = useState(false)
 
   const roleMetadata = useMemo(() => FAMILY_ROLES.find((role) => role.value === formData.familyRole), [formData.familyRole])
@@ -96,7 +100,7 @@ const SignupForm = ({ onSwitchToLogin }) => {
             value={formData.firstName}
             onChange={handleChange}
             className="block w-full rounded-2xl border border-slate-200 bg-white/70 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-leaf-400 focus:ring-2 focus:ring-leaf-200"
-            placeholder="Rishi"
+            placeholder={appCopy.childName}
           />
         </div>
         <div className="space-y-2">
