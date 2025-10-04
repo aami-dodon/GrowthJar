@@ -1,0 +1,107 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        leaf: {
+          50: "#effcf3",
+          100: "#d8f5e3",
+          200: "#b2eac8",
+          300: "#87dca8",
+          400: "#5eca87",
+          500: "#38b36a",
+          600: "#2a8b51",
+          700: "#1f653b",
+          800: "#124026",
+          900: "#082413",
+        },
+        sky: {
+          50: "#eff8ff",
+          100: "#d9ecff",
+          200: "#b4d8ff",
+          300: "#8dc1ff",
+          400: "#65a7ff",
+          500: "#3b83f6",
+          600: "#2d66d3",
+          700: "#214ca9",
+          800: "#17337f",
+          900: "#0f2159",
+        },
+        sunshine: {
+          50: "#fff9eb",
+          100: "#ffecc2",
+          200: "#ffdd8a",
+          300: "#ffcc4d",
+          400: "#ffba1a",
+          500: "#f69c00",
+          600: "#d47800",
+          700: "#b05800",
+          800: "#8c3c00",
+          900: "#662700",
+        },
+        blush: {
+          50: "#fff1f2",
+          100: "#ffd6dc",
+          200: "#ffb5c1",
+          300: "#ff8da3",
+          400: "#ff6586",
+          500: "#f63a62",
+          600: "#d4214c",
+          700: "#aa153a",
+          800: "#7f0c27",
+          900: "#540517",
+        },
+        lavender: {
+          50: "#f5f3ff",
+          100: "#ebe4ff",
+          200: "#d8c8ff",
+          300: "#c2a6ff",
+          400: "#a07bff",
+          500: "#8257f5",
+          600: "#643acc",
+          700: "#4a2da3",
+          800: "#332073",
+          900: "#1d1244",
+        },
+      },
+      fontFamily: {
+        display: ["Poppins", "Nunito", "sans-serif"],
+        body: ["Inter", "Lato", "Roboto", "sans-serif"],
+      },
+      boxShadow: {
+        glow: "0 15px 45px rgba(56, 179, 106, 0.25)",
+        jar: "inset 0 0 0 2px rgba(59, 131, 246, 0.25), 0 20px 40px -20px rgba(15, 33, 89, 0.4)",
+      },
+      backgroundImage: {
+        'soft-grid': "linear-gradient(135deg, rgba(59,131,246,0.05) 25%, transparent 25%), linear-gradient(225deg, rgba(59,131,246,0.05) 25%, transparent 25%), linear-gradient(45deg, rgba(56,179,106,0.05) 25%, transparent 25%), linear-gradient(315deg, rgba(56,179,106,0.05) 25%, transparent 25%)",
+      },
+      keyframes: {
+        slipDrop: {
+          '0%': { transform: 'translateY(-80px) scale(0.9)', opacity: 0 },
+          '60%': { transform: 'translateY(6px) scale(1.02)', opacity: 1 },
+          '100%': { transform: 'translateY(0) scale(1)', opacity: 1 },
+        },
+        jarGlow: {
+          '0%, 100%': { boxShadow: '0 0 0 rgba(59, 131, 246, 0)' },
+          '50%': { boxShadow: '0 0 0 12px rgba(59, 131, 246, 0.15)' },
+        },
+        pulseSoft: {
+          '0%, 100%': { transform: 'scale(1)', opacity: 1 },
+          '50%': { transform: 'scale(1.05)', opacity: 0.9 },
+        },
+        celebration: {
+          '0%': { transform: 'translateY(0) rotate(0)', opacity: 1 },
+          '100%': { transform: 'translateY(120px) rotate(360deg)', opacity: 0 },
+        },
+      },
+      animation: {
+        slipDrop: 'slipDrop 600ms ease-out forwards',
+        jarGlow: 'jarGlow 3s ease-in-out infinite',
+        pulseSoft: 'pulseSoft 3s ease-in-out infinite',
+        celebration: 'celebration 1200ms ease-out forwards',
+      },
+    },
+  },
+  plugins: [require('@tailwindcss/forms')],
+}
