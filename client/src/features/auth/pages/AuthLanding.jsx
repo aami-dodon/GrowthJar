@@ -18,7 +18,7 @@ const AuthLanding = () => {
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-12 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-6 text-center sm:text-left">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-leaf-500 text-lg font-bold text-white shadow-lg sm:mx-0">
-            RJ
+            GJ
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">{appCopy.jarName}</p>

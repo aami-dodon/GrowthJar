@@ -73,7 +73,7 @@ const renderTemplate = ({
             <table class="container" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:520px;background:#ffffff;border-radius:24px;padding:40px;box-shadow:0 30px 60px -40px rgba(15,33,89,0.35);">
               <tr>
                 <td style="text-align:center;">
-                  <div style="display:inline-flex;width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3b83f6,#38b36a);align-items:center;justify-content:center;color:#ffffff;font-size:24px;font-weight:700;margin-bottom:24px;">RJ</div>
+                  <div style="display:inline-block;width:64px;height:64px;line-height:64px;border-radius:20px;background:linear-gradient(135deg,#3b83f6,#38b36a);text-align:center;color:#ffffff;font-size:24px;font-weight:700;margin-bottom:24px;">GJ</div>
                   <h1 style="margin:0 0 16px;font-size:28px;line-height:36px;color:#0f172a;">${title}</h1>
                 </td>
               </tr>
