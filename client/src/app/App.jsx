@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import AuthLanding from '../features/auth/pages/AuthLanding'
 import VerifyEmailPage from '../features/auth/pages/VerifyEmailPage'
@@ -79,17 +80,32 @@ const RootRoute = () => {
   return isAuthenticated ? <AuthenticatedApp /> : <AuthLanding />
 }
 
-const App = () => (
-  <BrowserRouter>
-    <AuthProvider>
-      <Routes>
-        <Route path="/" element={<RootRoute />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AuthProvider>
-  </BrowserRouter>
-)
+const App = () => {
+  useEffect(() => {
+    const jarTitle = appCopy.childPossessiveName
+      ? `${appCopy.childPossessiveName} Growth Jar`
+      : 'Growth Jar'
+    document.title = jarTitle
+
+    const description = `${jarTitle} is a family gratitude ritual that helps parents and children celebrate wins, reflect on better choices, and grow together every day.`
+    const descriptionElement = document.querySelector('meta[name="description"]')
+    if (descriptionElement) {
+      descriptionElement.setAttribute('content', description)
+    }
+  }, [])
+
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<RootRoute />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
 
 export default App
