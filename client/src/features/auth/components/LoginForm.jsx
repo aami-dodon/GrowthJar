@@ -74,11 +74,11 @@ const LoginForm = ({ onForgotPassword, onSwitchToSignup }) => {
       >
         {loading ? 'Signing in…' : 'Sign in'}
       </button>
-      <div className="flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-start sm:justify-between">
         <button
           type="button"
           onClick={onForgotPassword}
-          className="font-semibold text-sky-600 transition hover:text-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+          className="text-left font-semibold text-sky-600 transition hover:text-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
         >
           Forgot password?
         </button>
